@@ -27,16 +27,19 @@ Your deployment directory (e.g., on Vercel or GitHub Pages) only requires two pr
 
 ---
 
-## 🚀 How to Create a Custom Client (Using the Kit)
+## 🚀 How to Create Your Own Knockoff (Using the Kit)
 
-You can easily adapt this kit to launch your own custom client/knockoff version using the automated toggle inside `jergcraft.js`.
+Want to make your own custom version? The fastest way is to **fork** this repository directly to your own GitHub account and connect it to Vercel.
 
-![Kit Tutorial](https://github.com/jergan-studio/Jergcraft/blob/main/image_2026-06-30_144456851.png?raw=true)
+![Kit Tutorial](https://github.com/jergan-studio/Jergcraft/blob/main/image_2026-06-30_144700393.png?raw=true)
 
 ### Step-by-Step Setup:
 
-1. **Configure the Variable:**
-   Open `jergcraft.js` and locate the `knockoff` boolean at the top of the file:
+1. **Fork the Repository:**
+   Click the **Fork** button at the top right of this page to create an identical copy of this project under your own GitHub profile.
+
+2. **Configure Your Toggle:**
+   Open your forked copy of `jergcraft.js` and locate the `knockoff` boolean at the top:
    ```javascript
    // Set to true to force mobile touch engine, or false for standard behavior
    const knockoff = true;
