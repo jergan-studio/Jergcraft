@@ -1,20 +1,18 @@
 /**
  * jergcraft.js
- * Version: v2.1.0 (Unified Domain Architecture)
- * Optimized for Vercel & Median.co. Prepares a local environment for direct settings modification.
+ * Version: v2.2.0 (Custom Input Modal Build)
+ * Optimized for Vercel & Median.co. Replaces native prompts with an HTML input field.
  */
 (function() {
     'use strict';
 
     // 1. Core Variables Configuration
     const knockoff = false; 
-    const VERSION_TAG = 'v2.1.0 (Unified Local)';
+    const VERSION_TAG = 'v2.2.0 (Modal Input)';
     const ACCESS_PASSWORD = 'Iamha';
-    
-    // Changing this to a local relative path allows the script to access the game directly
     const GAME_URL = "./game/index.html"; 
 
-    // 2. Administrative Interface Injection Engine
+    // 2. Core Menu & Modal Builder Engine
     function injectAdminInterface() {
         const styleFix = document.createElement('style');
         styleFix.innerHTML = `
@@ -47,7 +45,7 @@
                 align-items: center;
                 justify-content: center;
                 cursor: pointer;
-                z-index: 999999;
+                z-index: 999998;
                 box-shadow: 0 4px 8px rgba(0,0,0,0.5);
                 transition: background-color 0.2s, transform 0.1s;
             }
@@ -57,6 +55,66 @@
                 background-color: rgba(0, 255, 200, 0.3);
             }
 
+            /* Password Authentication Modal */
+            #jerg-auth-modal {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 280px;
+                background: #141414;
+                border: 2px solid #ff3333;
+                border-radius: 8px;
+                padding: 20px;
+                color: #fff;
+                font-family: 'Segoe UI', sans-serif;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+                z-index: 999999;
+                display: none;
+                text-align: center;
+            }
+
+            #jerg-auth-modal h4 {
+                margin: 0 0 15px 0;
+                color: #ff3333;
+                letter-spacing: 1px;
+            }
+
+            .modal-input {
+                width: 90%;
+                background: #222;
+                border: 1px solid #444;
+                padding: 10px;
+                border-radius: 4px;
+                color: #fff;
+                text-align: center;
+                font-size: 16px;
+                margin-bottom: 15px;
+                outline: none;
+            }
+
+            .modal-input:focus {
+                border-color: #ff3333;
+            }
+
+            .modal-btn-group {
+                display: flex;
+                gap: 10px;
+            }
+
+            .modal-btn {
+                flex: 1;
+                padding: 8px;
+                border-radius: 4px;
+                border: none;
+                cursor: pointer;
+                font-weight: bold;
+            }
+
+            .btn-submit { background: #ff3333; color: #fff; }
+            .btn-cancel { background: #444; color: #fff; }
+
+            /* Admin Control Panel */
             #jerg-admin-panel {
                 position: fixed;
                 top: 50%;
@@ -102,24 +160,40 @@
                 font-weight: bold;
                 margin-top: 10px;
             }
-
-            .panel-btn:active {
-                background-color: #444;
-            }
         `;
         document.head.appendChild(styleFix);
 
+        // Version Display Overlay
         const versionDisplay = document.createElement('div');
         versionDisplay.id = 'jerg-version';
         versionDisplay.innerText = VERSION_TAG;
         document.body.appendChild(versionDisplay);
 
+        // Floating Trigger Gear Button
         const adminButton = document.createElement('div');
         adminButton.id = 'jerg-admin-trigger';
         adminButton.innerText = '⚙';
-        adminButton.addEventListener('click', handleAdminAccess);
+        adminButton.addEventListener('click', () => {
+            document.getElementById('jerg-auth-pass').value = '';
+            document.getElementById('jerg-auth-modal').style.display = 'block';
+            document.getElementById('jerg-auth-pass').focus();
+        });
         document.body.appendChild(adminButton);
 
+        // Secure Authentication Input Modal Layout
+        const authModal = document.createElement('div');
+        authModal.id = 'jerg-auth-modal';
+        authModal.innerHTML = `
+            <h4>ACCESS REQUIRED</h4>
+            <input type="password" id="jerg-auth-pass" class="modal-input" placeholder="Enter Password">
+            <div class="modal-btn-group">
+                <button class="modal-btn btn-submit" id="auth-submit-btn">SUBMIT</button>
+                <button class="modal-btn btn-cancel" id="auth-cancel-btn">CANCEL</button>
+            </div>
+        `;
+        document.body.appendChild(authModal);
+
+        // Control Panel Utilities Layout
         const adminPanel = document.createElement('div');
         adminPanel.id = 'jerg-admin-panel';
         adminPanel.innerHTML = `
@@ -136,42 +210,32 @@
         `;
         document.body.appendChild(adminPanel);
 
+        // Auth Modal Interaction Controls
+        document.getElementById('auth-cancel-btn').addEventListener('click', () => {
+            authModal.style.display = 'none';
+        });
+
+        document.getElementById('auth-submit-btn').addEventListener('click', validateModalPassword);
+        document.getElementById('jerg-auth-pass').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') validateModalPassword();
+        });
+
+        function validateModalPassword() {
+            const val = document.getElementById('jerg-auth-pass').value;
+            if (val === ACCESS_PASSWORD) {
+                authModal.style.display = 'none';
+                document.getElementById('jerg-admin-panel').style.display = 'block';
+            } else {
+                alert("Incorrect password. Access denied.");
+                document.getElementById('jerg-auth-pass').value = '';
+            }
+        }
+
+        // Panel Close Control
         document.getElementById('close-panel-btn').addEventListener('click', () => {
             adminPanel.style.display = 'none';
         });
 
-        // Local Engine Modifiers 
+        // Local Storage Engine Integration Check
         document.getElementById('speed-toggle').addEventListener('change', (e) => {
-            const frame = document.getElementById('game-canvas-frame') || document.getElementById('game-frame');
-            if (!frame) return;
-
-            if (e.target.checked) {
-                // If hosted on the same domain, you can directly interface with local storage configurations
-                try {
-                    frame.contentWindow.localStorage.setItem('jerg_speed_modifier', 'active');
-                    console.log("Local speed state updated.");
-                } catch (err) {
-                    console.log("Awaiting local domain setup to adjust parameters.");
-                }
-            } else {
-                try {
-                    frame.contentWindow.localStorage.removeItem('jerg_speed_modifier');
-                } catch (err) {}
-            }
-        });
-
-        function handleAdminAccess() {
-            const enteredPassword = prompt("Enter menu access password:");
-            if (enteredPassword === ACCESS_PASSWORD) {
-                document.getElementById('jerg-admin-panel').style.display = 'block';
-            } else {
-                alert("Incorrect password. Access denied.");
-            }
-        }
-    }
-
-    // 3. Automated Routing Initialization
-    window.addEventListener('DOMContentLoaded', () => {
-        if (knockoff === true) {
-            const loaderStyle = document.createElement('style');
-            loaderStyle.innerHTML = `
+            const frame = document.getElementById('game-canvas-frame') || document.getElementById('game-frame
