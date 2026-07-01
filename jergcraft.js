@@ -1,30 +1,22 @@
 /**
  * jergcraft.js
- * Version: v1.6.0 (Combo Input Capture)
- * Optimized for Vercel & Median.co. Uses "/" + "J" key combination.
+ * Version: v1.7.0 (Single-Key Target Input Capture)
+ * Optimized for Vercel & Median.co. Triggers menu on "[" or "0".
  */
 (function() {
     'use strict';
 
     // 1. Core Variables Configuration
     const knockoff = false; 
-    const VERSION_TAG = 'v1.6.0 (Combo Input)';
+    const VERSION_TAG = 'v1.7.0 (Key Fixed)';
     const ACCESS_PASSWORD = 'Iamha';
     const GAME_URL = "https://irv77.github.io/EaglerPocketMobile/demo/";
 
-    // Track state of pressed keys for the combo system
-    const activeKeys = {
-        Slash: false,
-        KeyJ: false
-    };
-
-    // 2. Secret Menu Key Combination Handler
-    function checkComboAndPrompt() {
-        if (activeKeys.Slash && activeKeys.KeyJ) {
-            // Reset state immediately so it doesn't trigger multiple times
-            activeKeys.Slash = false;
-            activeKeys.KeyJ = false;
-
+    // 2. Secret Menu Key Handler
+    function handleGlobalInput(event) {
+        // Detects either the left bracket key or the standard digit 0 key
+        if (event.code === 'BracketLeft' || event.code === 'Digit0' || event.key === '[' || event.key === '0') {
+            
             const enteredPassword = prompt("Enter menu access password:");
 
             if (enteredPassword === ACCESS_PASSWORD) {
@@ -36,18 +28,8 @@
         }
     }
 
-    // Capture when keys are pressed down
-    window.addEventListener('keydown', function(event) {
-        if (event.code === 'Slash') activeKeys.Slash = true;
-        if (event.code === 'KeyJ') activeKeys.KeyJ = true;
-        checkComboAndPrompt();
-    });
-
-    // Reset tracking variables when keys are released
-    window.addEventListener('keyup', function(event) {
-        if (event.code === 'Slash') activeKeys.Slash = false;
-        if (event.code === 'KeyJ') activeKeys.KeyJ = false;
-    });
+    // Attach key listeners directly to the main layout context
+    window.addEventListener('keydown', handleGlobalInput);
 
     function initializeCustomMenu() {
         console.log("Custom engine configurations unlocked.");
@@ -164,13 +146,13 @@
                 setTimeout(() => {
                     loader.style.opacity = '0';
                     setTimeout(() => loader.remove(), 600);
-                }, 2000); 
+                }, 2500); // Maintained load delay window to maximize key interception stability
             });
 
             // Append frame element directly into container space
             document.body.appendChild(mobileFrame);
             
-            // Ensure main window stays targetable initially
+            // Push active container layer context focus
             window.focus();
         });
     }
