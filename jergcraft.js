@@ -1,23 +1,23 @@
 /**
  * jergcraft.js
- * Version: v2.0.0 (Global Admin Panel Build)
- * Optimized for Vercel & Median.co. Panel remains active regardless of knockoff mode.
+ * Version: v2.1.0 (Unified Domain Architecture)
+ * Optimized for Vercel & Median.co. Prepares a local environment for direct settings modification.
  */
 (function() {
     'use strict';
 
     // 1. Core Variables Configuration
-    const knockoff = false; // Works perfectly whether true or false
-    const VERSION_TAG = 'v2.0.0 (Global Admin)';
+    const knockoff = false; 
+    const VERSION_TAG = 'v2.1.0 (Unified Local)';
     const ACCESS_PASSWORD = 'Iamha';
-    const GAME_URL = "https://irv77.github.io/EaglerPocketMobile/demo/";
+    
+    // Changing this to a local relative path allows the script to access the game directly
+    const GAME_URL = "./game/index.html"; 
 
-    // 2. Core Menu Builder Function (Runs globally)
+    // 2. Administrative Interface Injection Engine
     function injectAdminInterface() {
-        // Inject structural styling for layouts, loaders, and the admin interface
         const styleFix = document.createElement('style');
         styleFix.innerHTML = `
-            /* Stationary Version Display Overlay */
             #jerg-version {
                 position: fixed;
                 bottom: 12px;
@@ -31,7 +31,6 @@
                 letter-spacing: 0.5px;
             }
 
-            /* Floating Administrative Trigger Button */
             #jerg-admin-trigger {
                 position: fixed;
                 top: 15px;
@@ -58,7 +57,6 @@
                 background-color: rgba(0, 255, 200, 0.3);
             }
 
-            /* Admin Control Panel Overlay Container */
             #jerg-admin-panel {
                 position: fixed;
                 top: 50%;
@@ -111,20 +109,17 @@
         `;
         document.head.appendChild(styleFix);
 
-        // Generate App Version Overlay Tag
         const versionDisplay = document.createElement('div');
         versionDisplay.id = 'jerg-version';
         versionDisplay.innerText = VERSION_TAG;
         document.body.appendChild(versionDisplay);
 
-        // Generate Floating Administrative Button
         const adminButton = document.createElement('div');
         adminButton.id = 'jerg-admin-trigger';
         adminButton.innerText = '⚙';
         adminButton.addEventListener('click', handleAdminAccess);
         document.body.appendChild(adminButton);
 
-        // Generate Control Panel UI
         const adminPanel = document.createElement('div');
         adminPanel.id = 'jerg-admin-panel';
         adminPanel.innerHTML = `
@@ -134,49 +129,37 @@
                 <input type="checkbox" id="opt-toggle" checked>
             </div>
             <div class="panel-row">
-                <span>Shader Overlays</span>
-                <input type="checkbox" id="shader-toggle" checked>
-            </div>
-            <div class="panel-row">
-                <span>Fast Speed Multiplier</span>
+                <span>Fast Game Ticks</span>
                 <input type="checkbox" id="speed-toggle">
             </div>
             <button class="panel-btn" id="close-panel-btn">CLOSE PANEL</button>
         `;
         document.body.appendChild(adminPanel);
 
-        // Close button functionality
         document.getElementById('close-panel-btn').addEventListener('click', () => {
             adminPanel.style.display = 'none';
         });
 
-        // Fast Speed Toggling Engine Loop Logic
-        let speedInterval = null;
+        // Local Engine Modifiers 
         document.getElementById('speed-toggle').addEventListener('change', (e) => {
-            // Find frame targets dynamically regardless of launch mode
             const frame = document.getElementById('game-canvas-frame') || document.getElementById('game-frame');
             if (!frame) return;
 
             if (e.target.checked) {
-                console.log("Fast processing environment requested.");
-                speedInterval = setInterval(() => {
-                    try {
-                        if (frame.contentWindow && frame.contentWindow.requestAnimationFrame) {
-                            frame.contentWindow.requestAnimationFrame(() => {});
-                        }
-                    } catch (err) {
-                        // Cross-domain safety limits handled silently
-                    }
-                }, 5);
-            } else {
-                if (speedInterval) {
-                    clearInterval(speedInterval);
-                    speedInterval = null;
+                // If hosted on the same domain, you can directly interface with local storage configurations
+                try {
+                    frame.contentWindow.localStorage.setItem('jerg_speed_modifier', 'active');
+                    console.log("Local speed state updated.");
+                } catch (err) {
+                    console.log("Awaiting local domain setup to adjust parameters.");
                 }
+            } else {
+                try {
+                    frame.contentWindow.localStorage.removeItem('jerg_speed_modifier');
+                } catch (err) {}
             }
         });
 
-        // Access password prompt handler
         function handleAdminAccess() {
             const enteredPassword = prompt("Enter menu access password:");
             if (enteredPassword === ACCESS_PASSWORD) {
@@ -190,93 +173,5 @@
     // 3. Automated Routing Initialization
     window.addEventListener('DOMContentLoaded', () => {
         if (knockoff === true) {
-            // Inject structural styling for mobile canvas loader layers
             const loaderStyle = document.createElement('style');
             loaderStyle.innerHTML = `
-                html, body {
-                    margin: 0 !important;
-                    padding: 0 !important;
-                    width: 100% !important;
-                    height: 100% !important;
-                    overflow: hidden !important;
-                    background-color: #000 !important;
-                    overscroll-behavior: none !important; 
-                    touch-action: none !important;
-                    -webkit-touch-callout: none !important;
-                    -webkit-user-select: none !important;
-                    user-select: none !important;
-                }
-                #jerg-loader {
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: linear-gradient(135deg, #141414 0%, #050505 100%);
-                    color: #fff;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    font-family: 'Segoe UI', sans-serif;
-                    z-index: 999999;
-                    transition: opacity 0.6s ease;
-                }
-                .spinner {
-                    width: 60px;
-                    height: 60px;
-                    border: 5px solid #222;
-                    border-top: 5px solid #00ffcc;
-                    border-radius: 50%;
-                    animation: spin 0.8s linear infinite;
-                    margin-bottom: 20px;
-                }
-                @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
-                }
-            `;
-            document.head.appendChild(loaderStyle);
-
-            // Wipe standard background router menus to compile the high-performance layout
-            document.body.innerHTML = '';
-
-            // Generate Loading UI Screen
-            const loader = document.createElement('div');
-            loader.id = 'jerg-loader';
-            loader.innerHTML = `
-                <div class="spinner"></div>
-                <h2 style="letter-spacing: 3px; margin: 0; color: #00ffcc; font-weight: 700;">JERGCRAFT MOBILE</h2>
-                <p style="color: #888; font-size: 13px; margin-top: 8px; letter-spacing: 1px;">Loading Assets...</p>
-            `;
-            document.body.appendChild(loader);
-
-            // Initialize the Fullscreen Knockoff Frame
-            const mobileFrame = document.createElement('iframe');
-            mobileFrame.src = GAME_URL;
-            mobileFrame.id = 'game-canvas-frame';
-            mobileFrame.style.width = '100%';
-            mobileFrame.style.height = '100%';
-            mobileFrame.style.border = 'none';
-            mobileFrame.style.display = 'block';
-            mobileFrame.style.position = 'absolute';
-            mobileFrame.style.top = '0';
-            mobileFrame.style.left = '0';
-            mobileFrame.style.zIndex = '99990';
-
-            mobileFrame.setAttribute('allow', 'autoplay; gamepad; fullscreen; keyboard; pointer-lock; xr-spatial-tracking');
-
-            mobileFrame.addEventListener('load', () => {
-                setTimeout(() => {
-                    loader.style.opacity = '0';
-                    setTimeout(() => loader.remove(), 600);
-                }, 2000); 
-            });
-
-            document.body.appendChild(mobileFrame);
-        }
-
-        // Always launch the Admin panel structures over the active DOM view
-        injectAdminInterface();
-    });
-})();
