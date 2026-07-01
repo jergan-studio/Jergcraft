@@ -1,16 +1,16 @@
 /**
  * jergcraft.js
- * Version: v2.3.0 (Panel Version Display Build)
- * Optimized for Vercel & Median.co. Displays the active version tag within the menu.
+ * Version: v2.3.1 (External URL Restore)
+ * Optimized for Vercel & Median.co. Uses the direct live URL for maximum reliability.
  */
 (function() {
     'use strict';
 
     // 1. Core Variables Configuration
-    const knockoff = true; 
-    const VERSION_TAG = 'v2.3.0 (Panel Version Display)';
+    const knockoff = true; // Set to true to automatically load the game full-screen
+    const VERSION_TAG = 'v2.3.1 (Live URL)';
     const ACCESS_PASSWORD = 'Iamha';
-    const GAME_URL = "./game/index.html"; 
+    const GAME_URL = "https://irv77.github.io/EaglerPocketMobile/demo/"; 
 
     // 2. Core Menu & Modal Builder Engine
     function injectAdminInterface() {
@@ -186,170 +186,4 @@
         adminButton.addEventListener('click', () => {
             document.getElementById('jerg-auth-pass').value = '';
             document.getElementById('jerg-auth-modal').style.display = 'block';
-            document.getElementById('jerg-auth-pass').focus();
-        });
-        document.body.appendChild(adminButton);
-
-        // Secure Authentication Input Modal Layout
-        const authModal = document.createElement('div');
-        authModal.id = 'jerg-auth-modal';
-        authModal.innerHTML = `
-            <h4>ACCESS REQUIRED</h4>
-            <input type="password" id="jerg-auth-pass" class="modal-input" placeholder="Enter Password">
-            <div class="modal-btn-group">
-                <button class="modal-btn btn-submit" id="auth-submit-btn">SUBMIT</button>
-                <button class="modal-btn btn-cancel" id="auth-cancel-btn">CANCEL</button>
-            </div>
-        `;
-        document.body.appendChild(authModal);
-
-        // Control Panel Utilities Layout (With Explicit Embedded Version Indicator)
-        const adminPanel = document.createElement('div');
-        adminPanel.id = 'jerg-admin-panel';
-        adminPanel.innerHTML = `
-            <h3>ADMIN UTILITIES</h3>
-            <div class="panel-version-text">Active System: ${VERSION_TAG}</div>
-            <div class="panel-row">
-                <span>Performance Mode</span>
-                <input type="checkbox" id="opt-toggle" checked>
-            </div>
-            <div class="panel-row">
-                <span>Fast Game Ticks</span>
-                <input type="checkbox" id="speed-toggle">
-            </div>
-            <button class="panel-btn" id="close-panel-btn">CLOSE PANEL</button>
-        `;
-        document.body.appendChild(adminPanel);
-
-        // Auth Modal Interaction Controls
-        document.getElementById('auth-cancel-btn').addEventListener('click', () => {
-            authModal.style.display = 'none';
-        });
-
-        document.getElementById('auth-submit-btn').addEventListener('click', validateModalPassword);
-        document.getElementById('jerg-auth-pass').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') validateModalPassword();
-        });
-
-        function validateModalPassword() {
-            const val = document.getElementById('jerg-auth-pass').value;
-            if (val === ACCESS_PASSWORD) {
-                authModal.style.display = 'none';
-                document.getElementById('jerg-admin-panel').style.display = 'block';
-            } else {
-                alert("Incorrect password. Access denied.");
-                document.getElementById('jerg-auth-pass').value = '';
-            }
-        }
-
-        // Panel Close Control
-        document.getElementById('close-panel-btn').addEventListener('click', () => {
-            adminPanel.style.display = 'none';
-        });
-
-        // Local Storage Engine Integration
-        document.getElementById('speed-toggle').addEventListener('change', (e) => {
-            const frame = document.getElementById('game-canvas-frame') || document.getElementById('game-frame');
-            if (!frame) return;
-
-            if (e.target.checked) {
-                try {
-                    frame.contentWindow.localStorage.setItem('jerg_speed_modifier', 'active');
-                } catch (err) {
-                    console.log("Local execution tracking state pending domain synchronization.");
-                }
-            } else {
-                try { frame.contentWindow.localStorage.removeItem('jerg_speed_modifier'); } catch (err) {}
-            }
-        });
-    }
-
-    // 3. Automated Routing Initialization
-    window.addEventListener('DOMContentLoaded', () => {
-        if (knockoff === true) {
-            const loaderStyle = document.createElement('style');
-            loaderStyle.innerHTML = `
-                html, body {
-                    margin: 0 !important;
-                    padding: 0 !important;
-                    width: 100% !important;
-                    height: 100% !important;
-                    overflow: hidden !important;
-                    background-color: #000 !important;
-                    overscroll-behavior: none !important; 
-                    touch-action: none !important;
-                    -webkit-touch-callout: none !important;
-                    -webkit-user-select: none !important;
-                    user-select: none !important;
-                }
-                #jerg-loader {
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: linear-gradient(135deg, #141414 0%, #050505 100%);
-                    color: #fff;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    font-family: 'Segoe UI', sans-serif;
-                    z-index: 999995;
-                    transition: opacity 0.6s ease;
-                }
-                .spinner {
-                    width: 60px;
-                    height: 60px;
-                    border: 5px solid #222;
-                    border-top: 5px solid #00ffcc;
-                    border-radius: 50%;
-                    animation: spin 0.8s linear infinite;
-                    margin-bottom: 20px;
-                }
-                @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
-                }
-            `;
-            document.head.appendChild(loaderStyle);
-
-            document.body.innerHTML = '';
-
-            const loader = document.createElement('div');
-            loader.id = 'jerg-loader';
-            loader.innerHTML = `
-                <div class="spinner"></div>
-                <h2 style="letter-spacing: 3px; margin: 0; color: #00ffcc; font-weight: 700;">JERGCRAFT MOBILE</h2>
-                <p style="color: #888; font-size: 13px; margin-top: 8px; letter-spacing: 1px;">Loading Assets...</p>
-            `;
-            document.body.appendChild(loader);
-
-            const mobileFrame = document.createElement('iframe');
-            mobileFrame.src = GAME_URL;
-            mobileFrame.id = 'game-canvas-frame';
-            mobileFrame.style.width = '100%';
-            mobileFrame.style.height = '100%';
-            mobileFrame.style.border = 'none';
-            mobileFrame.style.display = 'block';
-            mobileFrame.style.position = 'absolute';
-            mobileFrame.style.top = '0';
-            mobileFrame.style.left = '0';
-            mobileFrame.style.zIndex = '99990';
-
-            mobileFrame.setAttribute('allow', 'autoplay; gamepad; fullscreen; keyboard; pointer-lock; xr-spatial-tracking');
-
-            mobileFrame.addEventListener('load', () => {
-                setTimeout(() => {
-                    loader.style.opacity = '0';
-                    setTimeout(() => loader.remove(), 600);
-                }, 2000); 
-            });
-
-            document.body.appendChild(mobileFrame);
-        }
-
-        // Initialize panel overlay elements directly over the page viewport
-        injectAdminInterface();
-    });
-})();
+            document.getElementById('jerg-auth-pass').focus
