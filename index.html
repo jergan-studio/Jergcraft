@@ -10,18 +10,20 @@
     <meta name="mobile-web-app-capable" content="yes">
 
     <style>
+        /* Host layout reset */
         html, body {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #111;
+            background-color: #0d0d0d;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             user-select: none;
             -webkit-user-select: none;
         }
 
+        /* Standard Choice Menu styling (Visible only if knockoff is false) */
         #menu-container {
             position: fixed;
             top: 0;
@@ -33,7 +35,7 @@
             align-items: center;
             justify-content: center;
             background: linear-gradient(135deg, #1c1c1c 0%, #0d0d0d 100%);
-            z-index: 9999;
+            z-index: 999;
             transition: opacity 0.4s ease;
         }
 
@@ -76,7 +78,7 @@
             transform: scale(0.96);
         }
 
-        /* Full screen game frame setup */
+        /* Default fallback game container frame */
         #game-frame {
             width: 100%;
             height: 100%;
@@ -88,35 +90,31 @@
             z-index: 1;
         }
     </style>
+
+    <script type="text/javascript" src="jergcraft.js"></script>
 </head>
 <body>
 
     <div id="menu-container">
-        <h1 id="main-title">EaglerCraft</h1>
+        <h1>JERGCRAFT</h1>
         <div class="button-group">
-            <button class="menu-btn" onclick="launchGame('mobile')">MOBILE</button>
-            <button class="menu-btn" onclick="launchGame('computer')">COMPUTER</button>
+            <button class="menu-btn" onclick="launchManualMode('mobile')">MOBILE</button>
+            <button class="menu-btn" onclick="launchManualMode('computer')">COMPUTER</button>
         </div>
     </div>
 
     <iframe 
         id="game-frame"
-        allow="autoplay; gamepad; fullscreen; keyboard; pointer-lock"
+        allow="autoplay; gamepad; fullscreen; keyboard; pointer-lock; xr-spatial-tracking"
         sandbox="allow-same-origin allow-scripts allow-pointer-lock allow-forms">
     </iframe>
 
     <script type="text/javascript">
-        // 1. Force local text replacement on your own menu items instantly
-        function applyLocalReplacement() {
-            const title = document.getElementById('main-title');
-            if (title && title.innerText.toLowerCase().includes('eaglercraft')) {
-                title.innerText = 'JERGCRAFT';
-            }
-        }
-        applyLocalReplacement();
-
-        // 2. Launch game logic using a clean frame wrapper
-        function launchGame(mode) {
+        /**
+         * Manual Fallback Navigation Router
+         * (Runs only if knockoff is set to false in jergcraft.js)
+         */
+        function launchManualMode(mode) {
             const menu = document.getElementById('menu-container');
             const frame = document.getElementById('game-frame');
             
@@ -126,12 +124,11 @@
                 frame.src = "https://eaglercraft.app/web/";
             }
 
-            // Hide the choice menu cleanly
             menu.style.opacity = "0";
             setTimeout(() => {
                 menu.style.display = "none";
                 frame.style.display = "block";
-                frame.focus(); // Forces focus so keyboard controls work instantly
+                frame.focus();
             }, 400);
         }
     </script>
