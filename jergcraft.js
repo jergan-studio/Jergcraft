@@ -1,41 +1,107 @@
 /**
  * jergcraft.js
- * If knockoff equals true, instantly redirects the layout 
- * to load the full-screen mobile Eaglercraft view.
+ * Version: v1.0.0
+ * If knockoff equals true, triggers an optimized mobile environment with 
+ * stabilization layers, a custom loading sequence, and version overlays.
  */
 (function() {
     'use strict';
 
-    // 1. Define your condition variable
-    // Change this to true or false depending on your needs
+    // 1. Configuration Toggle
     const knockoff = false; 
+    const VERSION_TAG = 'v1.0.0';
 
     // 2. Execution logic
     if (knockoff === true) {
-        // Wait for the DOM to be ready so we can safely modify the page body
         window.addEventListener('DOMContentLoaded', () => {
             
-            // Apply global CSS resets to make the layout perfectly full-screen
-            document.documentElement.style.margin = '0';
-            document.documentElement.style.padding = '0';
-            document.documentElement.style.width = '100%';
-            document.documentElement.style.height = '100%';
-            document.documentElement.style.overflow = 'hidden';
-            
-            document.body.style.margin = '0';
-            document.body.style.padding = '0';
-            document.body.style.width = '100%';
-            document.body.style.height = '100%';
-            document.body.style.overflow = 'hidden';
-            document.body.style.backgroundColor = '#000';
+            // Apply strict full-screen mobile resets to stabilize layout scrolling
+            const styleFix = document.createElement('style');
+            styleFix.innerHTML = `
+                html, body {
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    width: 100% !important;
+                    height: 100% !important;
+                    overflow: hidden !important;
+                    background-color: #000 !important;
+                    /* Core mobile stabilization rules */
+                    overscroll-behavior: none !important; 
+                    touch-action: none !important;
+                    -webkit-touch-callout: none !important;
+                    -webkit-user-select: none !important;
+                    user-select: none !important;
+                }
+                
+                /* Custom Mobile Loading Screen Layout */
+                #jerg-loader {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(135deg, #1c1c1c 0%, #0d0d0d 100%);
+                    color: #fff;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    font-family: 'Segoe UI', sans-serif;
+                    z-index: 999999;
+                    transition: opacity 0.6s ease;
+                }
 
-            // Clear out any existing HTML elements on the screen (like background menus)
+                .spinner {
+                    width: 50px;
+                    height: 50px;
+                    border: 5px solid #333;
+                    border-top: 5px solid #55ff55;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                    margin-bottom: 20px;
+                }
+
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+
+                /* Stationary Version Display Overlay */
+                #jerg-version {
+                    position: fixed;
+                    bottom: 10px;
+                    right: 15px;
+                    color: rgba(255, 255, 255, 0.4);
+                    font-family: monospace;
+                    font-size: 12px;
+                    z-index: 999998; /* Stays right beneath the loader but above the game */
+                    pointer-events: none;
+                    text-shadow: 1px 1px 2px #000;
+                }
+            `;
+            document.head.appendChild(styleFix);
+
+            // Clear the existing HTML wrapper completely
             document.body.innerHTML = '';
 
-            // Create the full-screen iframe elements
+            // Construct and Inject the Loading Screen
+            const loader = document.createElement('div');
+            loader.id = 'jerg-loader';
+            loader.innerHTML = `
+                <div class="spinner"></div>
+                <h2 style="letter-spacing: 2px; margin: 0;">LOADING JERGCRAFT...</h2>
+                <p style="color: #666; font-size: 14px; margin-top: 5px;">Optimizing Mobile Controls</p>
+            `;
+            document.body.appendChild(loader);
+
+            // Construct and Inject the Version Label
+            const versionDisplay = document.createElement('div');
+            versionDisplay.id = 'jerg-version';
+            versionDisplay.innerText = VERSION_TAG;
+            document.body.appendChild(versionDisplay);
+
+            // Create the full-screen game canvas container iframe
             const mobileFrame = document.createElement('iframe');
-            
-            // Set properties and mobile links
             mobileFrame.src = "https://irv77.github.io/EaglerPocketMobile/demo/";
             mobileFrame.style.width = '100%';
             mobileFrame.style.height = '100%';
@@ -46,15 +112,11 @@
             mobileFrame.style.left = '0';
             mobileFrame.style.zIndex = '99999';
 
-            // Assign permissions so touch inputs, keyboards, and mouse locks function correctly
+            // Add permissions required to stabilize locks and inputs natively
             mobileFrame.setAttribute('allow', 'autoplay; gamepad; fullscreen; keyboard; pointer-lock');
             mobileFrame.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-pointer-lock allow-forms');
 
-            // Inject the frame directly into the clean page body
-            document.body.appendChild(mobileFrame);
-            
-            // Force focus onto the frame so player inputs work immediately
-            mobileFrame.focus();
-        });
-    }
-})();
+            // Fade out loader screen once the external frame resources resolve
+            mobileFrame.addEventListener('load', () => {
+                setTimeout(() => {
+                    loader.style.opacity = '
