@@ -1,20 +1,30 @@
 /**
  * jergcraft.js
- * Version: v1.5.1 (Stable Input Capture)
- * Optimized for Vercel & Median.co. Keeps right-shift keybinds stable.
+ * Version: v1.6.0 (Combo Input Capture)
+ * Optimized for Vercel & Median.co. Uses "/" + "J" key combination.
  */
 (function() {
     'use strict';
 
     // 1. Core Variables Configuration
     const knockoff = true; 
-    const VERSION_TAG = 'v1.5.1 (Stable Input)';
+    const VERSION_TAG = 'v1.6.0 (Combo Input)';
     const ACCESS_PASSWORD = 'Iamha';
     const GAME_URL = "https://irv77.github.io/EaglerPocketMobile/demo/";
 
-    // 2. Secret Menu Key Handler
-    function handleGlobalKeydown(event) {
-        if (event.code === 'ShiftRight') {
+    // Track state of pressed keys for the combo system
+    const activeKeys = {
+        Slash: false,
+        KeyJ: false
+    };
+
+    // 2. Secret Menu Key Combination Handler
+    function checkComboAndPrompt() {
+        if (activeKeys.Slash && activeKeys.KeyJ) {
+            // Reset state immediately so it doesn't trigger multiple times
+            activeKeys.Slash = false;
+            activeKeys.KeyJ = false;
+
             const enteredPassword = prompt("Enter menu access password:");
 
             if (enteredPassword === ACCESS_PASSWORD) {
@@ -26,8 +36,18 @@
         }
     }
 
-    // Attach key listener to the main window container
-    window.addEventListener('keydown', handleGlobalKeydown);
+    // Capture when keys are pressed down
+    window.addEventListener('keydown', function(event) {
+        if (event.code === 'Slash') activeKeys.Slash = true;
+        if (event.code === 'KeyJ') activeKeys.KeyJ = true;
+        checkComboAndPrompt();
+    });
+
+    // Reset tracking variables when keys are released
+    window.addEventListener('keyup', function(event) {
+        if (event.code === 'Slash') activeKeys.Slash = false;
+        if (event.code === 'KeyJ') activeKeys.KeyJ = false;
+    });
 
     function initializeCustomMenu() {
         console.log("Custom engine configurations unlocked.");
@@ -150,7 +170,7 @@
             // Append frame element directly into container space
             document.body.appendChild(mobileFrame);
             
-            // Pro Tip for Testing: Press Right Shift while the green spinner is still loading on screen!
+            // Ensure main window stays targetable initially
             window.focus();
         });
     }
