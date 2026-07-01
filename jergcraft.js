@@ -7,7 +7,7 @@
     'use strict';
 
     // 1. Core Variables Configuration
-    const knockoff = false; // Set to true to automatically load the game full-screen
+    const knockoff = true; // Set to true to automatically load the game full-screen
     const VERSION_TAG = 'v2.3.1 (Live URL)';
     const ACCESS_PASSWORD = 'Iamha';
     const GAME_URL = "https://irv77.github.io/EaglerPocketMobile/demo/"; 
