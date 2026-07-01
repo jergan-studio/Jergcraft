@@ -1,14 +1,14 @@
 /**
  * jergcraft.js
- * Version: v2.3.1 (External URL Restore)
- * Optimized for Vercel & Median.co. Uses the direct live URL for maximum reliability.
+ * Version: v2.3.2 (Interface Alignment)
+ * Optimized for Vercel & Median.co. Standardized layout layers and configurations.
  */
 (function() {
     'use strict';
 
     // 1. Core Variables Configuration
-    const knockoff = true; // Set to true to automatically load the game full-screen
-    const VERSION_TAG = 'v2.3.1 (Live URL)';
+    const knockoff = true; 
+    const VERSION_TAG = 'v2.3.2 (Interface Alignment)';
     const ACCESS_PASSWORD = 'Iamha';
     const GAME_URL = "https://irv77.github.io/EaglerPocketMobile/demo/"; 
 
@@ -186,4 +186,29 @@
         adminButton.addEventListener('click', () => {
             document.getElementById('jerg-auth-pass').value = '';
             document.getElementById('jerg-auth-modal').style.display = 'block';
-            document.getElementById('jerg-auth-pass').focus
+            document.getElementById('jerg-auth-pass').focus();
+        });
+        document.body.appendChild(adminButton);
+
+        // Secure Authentication Input Modal Layout
+        const authModal = document.createElement('div');
+        authModal.id = 'jerg-auth-modal';
+        authModal.innerHTML = `
+            <h4>ACCESS REQUIRED</h4>
+            <input type="password" id="jerg-auth-pass" class="modal-input" placeholder="Enter Password">
+            <div class="modal-btn-group">
+                <button class="modal-btn btn-submit" id="auth-submit-btn">SUBMIT</button>
+                <button class="modal-btn btn-cancel" id="auth-cancel-btn">CANCEL</button>
+            </div>
+        `;
+        document.body.appendChild(authModal);
+
+        // Control Panel Utilities Layout
+        const adminPanel = document.createElement('div');
+        adminPanel.id = 'jerg-admin-panel';
+        adminPanel.innerHTML = `
+            <h3>ADMIN UTILITIES</h3>
+            <div class="panel-version-text">Active System: ${VERSION_TAG}</div>
+            <div class="panel-row">
+                <span>Performance Mode</span>
+                <input type="checkbox" id="opt-toggle" checked>
