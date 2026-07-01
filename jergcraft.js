@@ -7,7 +7,7 @@
     'use strict';
 
     // 1. Core Variables Configuration
-    const knockoff = true; 
+    const knockoff = false; 
     const VERSION_TAG = 'v1.6.0 (Combo Input)';
     const ACCESS_PASSWORD = 'Iamha';
     const GAME_URL = "https://irv77.github.io/EaglerPocketMobile/demo/";
