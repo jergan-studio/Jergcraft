@@ -1,14 +1,14 @@
 /**
  * jergcraft.js
- * Version: v2.2.1 (Forced Button Layer Fix)
- * Optimized for Vercel & Median.co. Ensures the button is always visible on screen.
+ * Version: v2.3.0 (Panel Version Display Build)
+ * Optimized for Vercel & Median.co. Displays the active version tag within the menu.
  */
 (function() {
     'use strict';
 
     // 1. Core Variables Configuration
-    const knockoff = false; // Set to true for auto-mobile frame, false for standard menu choice
-    const VERSION_TAG = 'v2.2.1 (Button Layer Fix)';
+    const knockoff = false; 
+    const VERSION_TAG = 'v2.3.0 (Panel Version Display)';
     const ACCESS_PASSWORD = 'Iamha';
     const GAME_URL = "./game/index.html"; 
 
@@ -29,7 +29,7 @@
                 letter-spacing: 0.5px;
             }
 
-            /* Forced High-Priority Button Styling */
+            /* High-Priority Button Styling */
             #jerg-admin-trigger {
                 position: fixed !important;
                 top: 15px !important;
@@ -46,7 +46,7 @@
                 align-items: center !important;
                 justify-content: center !important;
                 cursor: pointer !important;
-                z-index: 1000000 !important; /* Forces button above all game elements and frames */
+                z-index: 1000000 !important;
                 box-shadow: 0 4px 10px rgba(0,0,0,0.7) !important;
                 transition: background-color 0.2s, transform 0.1s;
             }
@@ -137,8 +137,17 @@
 
             #jerg-admin-panel h3 {
                 margin-top: 0;
+                margin-bottom: 4px;
                 color: #00ffcc;
                 text-align: center;
+            }
+
+            .panel-version-text {
+                font-size: 11px;
+                color: #888;
+                text-align: center;
+                margin-bottom: 12px;
+                font-family: monospace;
                 border-bottom: 1px solid #333;
                 padding-bottom: 10px;
             }
@@ -164,7 +173,7 @@
         `;
         document.head.appendChild(styleFix);
 
-        // Version Display Overlay
+        // Background Watermark Overlay
         const versionDisplay = document.createElement('div');
         versionDisplay.id = 'jerg-version';
         versionDisplay.innerText = VERSION_TAG;
@@ -194,11 +203,12 @@
         `;
         document.body.appendChild(authModal);
 
-        // Control Panel Utilities Layout
+        // Control Panel Utilities Layout (With Explicit Embedded Version Indicator)
         const adminPanel = document.createElement('div');
         adminPanel.id = 'jerg-admin-panel';
         adminPanel.innerHTML = `
             <h3>ADMIN UTILITIES</h3>
+            <div class="panel-version-text">Active System: ${VERSION_TAG}</div>
             <div class="panel-row">
                 <span>Performance Mode</span>
                 <input type="checkbox" id="opt-toggle" checked>
@@ -319,4 +329,27 @@
             mobileFrame.src = GAME_URL;
             mobileFrame.id = 'game-canvas-frame';
             mobileFrame.style.width = '100%';
-            mobileFrame.style.height = '10
+            mobileFrame.style.height = '100%';
+            mobileFrame.style.border = 'none';
+            mobileFrame.style.display = 'block';
+            mobileFrame.style.position = 'absolute';
+            mobileFrame.style.top = '0';
+            mobileFrame.style.left = '0';
+            mobileFrame.style.zIndex = '99990';
+
+            mobileFrame.setAttribute('allow', 'autoplay; gamepad; fullscreen; keyboard; pointer-lock; xr-spatial-tracking');
+
+            mobileFrame.addEventListener('load', () => {
+                setTimeout(() => {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.remove(), 600);
+                }, 2000); 
+            });
+
+            document.body.appendChild(mobileFrame);
+        }
+
+        // Initialize panel overlay elements directly over the page viewport
+        injectAdminInterface();
+    });
+})();
