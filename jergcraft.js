@@ -1,46 +1,22 @@
 /**
  * jergcraft.js
- * Version: v1.7.0 (Single-Key Target Input Capture)
- * Optimized for Vercel & Median.co. Triggers menu on "[" or "0".
+ * Version: v1.8.0 (Secure Overlay Menu Build)
+ * Optimized for Vercel & Median.co. Adds a floating administrative panel button.
  */
 (function() {
     'use strict';
 
     // 1. Core Variables Configuration
-    const knockoff = false; 
-    const VERSION_TAG = 'v1.7.0 (Key Fixed)';
+    const knockoff = true; 
+    const VERSION_TAG = 'v1.8.0 (Admin Panel)';
     const ACCESS_PASSWORD = 'Iamha';
     const GAME_URL = "https://irv77.github.io/EaglerPocketMobile/demo/";
 
-    // 2. Secret Menu Key Handler
-    function handleGlobalInput(event) {
-        // Detects either the left bracket key or the standard digit 0 key
-        if (event.code === 'BracketLeft' || event.code === 'Digit0' || event.key === '[' || event.key === '0') {
-            
-            const enteredPassword = prompt("Enter menu access password:");
-
-            if (enteredPassword === ACCESS_PASSWORD) {
-                alert("Access Granted: Initializing utility layers...");
-                initializeCustomMenu();
-            } else {
-                alert("Incorrect password. Access denied.");
-            }
-        }
-    }
-
-    // Attach key listeners directly to the main layout context
-    window.addEventListener('keydown', handleGlobalInput);
-
-    function initializeCustomMenu() {
-        console.log("Custom engine configurations unlocked.");
-        // Add your overlay, interface modification, or client-side adjustments here
-    }
-
-    // 3. Automated Knockoff Setup Engine
+    // 2. Automated Knockoff Setup Engine
     if (knockoff === true) {
         window.addEventListener('DOMContentLoaded', () => {
             
-            // Inject structural styling for the layout boundaries and loader
+            // Inject structural styling for layouts, loaders, and the admin interface
             const styleFix = document.createElement('style');
             styleFix.innerHTML = `
                 html, body {
@@ -98,15 +74,90 @@
                     color: rgba(0, 255, 200, 0.35);
                     font-family: monospace;
                     font-size: 11px;
-                    z-index: 999998;
+                    z-index: 999994;
                     pointer-events: none;
                     text-shadow: 1px 1px 2px #000;
                     letter-spacing: 0.5px;
                 }
+
+                /* Floating Administrative Trigger Button */
+                #jerg-admin-trigger {
+                    position: fixed;
+                    top: 15px;
+                    right: 15px;
+                    width: 40px;
+                    height: 40px;
+                    background-color: rgba(20, 20, 20, 0.7);
+                    border: 2px solid #00ffcc;
+                    border-radius: 50%;
+                    color: #00ffcc;
+                    font-size: 20px;
+                    font-weight: bold;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    z-index: 999990;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+                    transition: background-color 0.2s, transform 0.1s;
+                }
+
+                #jerg-admin-trigger:active {
+                    transform: scale(0.9);
+                    background-color: rgba(0, 255, 200, 0.3);
+                }
+
+                /* Admin Control Panel Overlay Container */
+                #jerg-admin-panel {
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 300px;
+                    background: #1a1a1a;
+                    border: 3px solid #00ffcc;
+                    border-radius: 10px;
+                    padding: 20px;
+                    color: #fff;
+                    font-family: 'Segoe UI', sans-serif;
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+                    z-index: 999995;
+                    display: none;
+                }
+
+                #jerg-admin-panel h3 {
+                    margin-top: 0;
+                    color: #00ffcc;
+                    text-align: center;
+                    border-bottom: 1px solid #333;
+                    padding-bottom: 10px;
+                }
+
+                .panel-row {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin: 15px 0;
+                }
+
+                .panel-btn {
+                    width: 100%;
+                    background-color: #333;
+                    border: 1px solid #555;
+                    color: #fff;
+                    padding: 10px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-weight: bold;
+                }
+
+                .panel-btn:active {
+                    background-color: #444;
+                }
             `;
             document.head.appendChild(styleFix);
 
-            // Clear out standard page background structures
+            // Wipe parent page container HTML
             document.body.innerHTML = '';
 
             // Generate Loading UI Screen
@@ -125,7 +176,36 @@
             versionDisplay.innerText = VERSION_TAG;
             document.body.appendChild(versionDisplay);
 
-            // Create a clean element frame without restrictive local sandbox rules
+            // Generate Floating Administrative Button
+            const adminButton = document.createElement('div');
+            adminButton.id = 'jerg-admin-trigger';
+            adminButton.innerText = '⚙';
+            adminButton.addEventListener('click', handleAdminAccess);
+            document.body.appendChild(adminButton);
+
+            // Generate Control Panel UI
+            const adminPanel = document.createElement('div');
+            adminPanel.id = 'jerg-admin-panel';
+            adminPanel.innerHTML = `
+                <h3>ADMIN UTILITIES</h3>
+                <div class="panel-row">
+                    <span>Performance Optimization</span>
+                    <input type="checkbox" id="opt-toggle" checked>
+                </div>
+                <div class="panel-row">
+                    <span>Shader Rendering Layer</span>
+                    <input type="checkbox" id="shader-toggle" checked>
+                </div>
+                <button class="panel-btn" id="close-panel-btn">CLOSE PANEL</button>
+            `;
+            document.body.appendChild(adminPanel);
+
+            // Close button functionality
+            document.getElementById('close-panel-btn').addEventListener('click', () => {
+                adminPanel.style.display = 'none';
+            });
+
+            // Initialize the Fullscreen High-Performance Frame
             const mobileFrame = document.createElement('iframe');
             mobileFrame.src = GAME_URL;
             mobileFrame.id = 'game-canvas-frame';
@@ -136,7 +216,7 @@
             mobileFrame.style.position = 'absolute';
             mobileFrame.style.top = '0';
             mobileFrame.style.left = '0';
-            mobileFrame.style.zIndex = '99995';
+            mobileFrame.style.zIndex = '99990';
 
             // Allow all underlying hardware pipelines (Pointer Lock, WebGL, Fullscreen)
             mobileFrame.setAttribute('allow', 'autoplay; gamepad; fullscreen; keyboard; pointer-lock; xr-spatial-tracking');
@@ -146,14 +226,21 @@
                 setTimeout(() => {
                     loader.style.opacity = '0';
                     setTimeout(() => loader.remove(), 600);
-                }, 2500); // Maintained load delay window to maximize key interception stability
+                }, 2000); 
             });
 
             // Append frame element directly into container space
             document.body.appendChild(mobileFrame);
-            
-            // Push active container layer context focus
-            window.focus();
+
+            // Access handler function
+            function handleAdminAccess() {
+                const enteredPassword = prompt("Enter menu access password:");
+                if (enteredPassword === ACCESS_PASSWORD) {
+                    document.getElementById('jerg-admin-panel').style.display = 'block';
+                } else {
+                    alert("Incorrect password. Access denied.");
+                }
+            }
         });
     }
 })();
