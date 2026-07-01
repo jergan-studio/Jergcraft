@@ -1,33 +1,37 @@
 /**
  * jergcraft.js
- * Version: v1.5.0 (Embedded Sandbox-Free Engine)
- * Launches full-screen mobile client directly inside the host DOM to bypass iframe sandbox blocks.
+ * Version: v1.5.1 (Stable Input Capture)
+ * Optimized for Vercel & Median.co. Keeps right-shift keybinds stable.
  */
 (function() {
     'use strict';
 
     // 1. Core Variables Configuration
-    const knockoff = false; 
-    const VERSION_TAG = 'v1.5.0 (Stable Layer)';
+    const knockoff = true; 
+    const VERSION_TAG = 'v1.5.1 (Stable Input)';
     const ACCESS_PASSWORD = 'Iamha';
     const GAME_URL = "https://irv77.github.io/EaglerPocketMobile/demo/";
 
     // 2. Secret Menu Key Handler
-    window.addEventListener('keydown', function(event) {
+    function handleGlobalKeydown(event) {
         if (event.code === 'ShiftRight') {
             const enteredPassword = prompt("Enter menu access password:");
 
             if (enteredPassword === ACCESS_PASSWORD) {
-                alert("Access Granted: Initializing menu layers...");
+                alert("Access Granted: Initializing utility layers...");
                 initializeCustomMenu();
             } else {
                 alert("Incorrect password. Access denied.");
             }
         }
-    });
+    }
+
+    // Attach key listener to the main window container
+    window.addEventListener('keydown', handleGlobalKeydown);
 
     function initializeCustomMenu() {
         console.log("Custom engine configurations unlocked.");
+        // Add your overlay, interface modification, or client-side adjustments here
     }
 
     // 3. Automated Knockoff Setup Engine
@@ -122,6 +126,7 @@
             // Create a clean element frame without restrictive local sandbox rules
             const mobileFrame = document.createElement('iframe');
             mobileFrame.src = GAME_URL;
+            mobileFrame.id = 'game-canvas-frame';
             mobileFrame.style.width = '100%';
             mobileFrame.style.height = '100%';
             mobileFrame.style.border = 'none';
@@ -142,9 +147,11 @@
                 }, 2000); 
             });
 
-            // Append frame element directly into container space and give input focus
+            // Append frame element directly into container space
             document.body.appendChild(mobileFrame);
-            mobileFrame.focus();
+            
+            // Pro Tip for Testing: Press Right Shift while the green spinner is still loading on screen!
+            window.focus();
         });
     }
 })();
