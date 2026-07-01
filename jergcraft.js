@@ -1,16 +1,38 @@
 /**
  * jergcraft.js
- * Version: v1.1.0 (Shader Stable)
+ * Version: v1.2.0 (Shader Stable + Menu Utility)
  * Core injection router optimized for Vercel deployment and Median.co wrapper integration.
  */
 (function() {
     'use strict';
 
     // 1. Core Variables Configuration
-    const knockoff = false; 
-    const VERSION_TAG = 'v1.1.0 (Shader Stable)';
+    const knockoff = true; 
+    const VERSION_TAG = 'v1.2.0 (Shader Stable)';
+    const ACCESS_PASSWORD = 'Iamha';
 
-    // 2. Automated Knockoff Setup Engine
+    // 2. Secret Menu Key Handler
+    // Listen globally for the Right Shift key activation
+    window.addEventListener('keydown', function(event) {
+        if (event.code === 'ShiftRight') {
+            const enteredPassword = prompt("Enter menu access password:");
+
+            if (enteredPassword === ACCESS_PASSWORD) {
+                alert("Access Granted: Initializing menu layers...");
+                initializeCustomMenu();
+            } else {
+                alert("Incorrect password. Access denied.");
+            }
+        }
+    });
+
+    // Placeholder function where your custom adjustments/overlays go
+    function initializeCustomMenu() {
+        console.log("Custom engine configurations unlocked.");
+        // Your custom client modification logic can go here
+    }
+
+    // 3. Automated Knockoff Setup Engine
     if (knockoff === true) {
         window.addEventListener('DOMContentLoaded', () => {
             
@@ -124,9 +146,4 @@
                 }, 2000); // 2-second canvas buffering time to safely compile WebGL shader pipelines
             });
 
-            // Embed runtime engine element and focus canvas context inputs
-            document.body.appendChild(mobileFrame);
-            mobileFrame.focus();
-        });
-    }
-})();
+            // Embed runtime engine element and
