@@ -7,7 +7,7 @@
     'use strict';
 
     // 1. Core Variables Configuration
-    const knockoff = true; 
+    const knockoff = false; 
     const VERSION_TAG = 'v1.1.0 (Shader Stable)';
 
     // 2. Automated Knockoff Setup Engine
