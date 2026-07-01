@@ -1,18 +1,18 @@
 /**
  * jergcraft.js
- * Version: v1.2.0 (Shader Stable + Menu Utility)
- * Core injection router optimized for Vercel deployment and Median.co wrapper integration.
+ * Version: v1.4.0 (Direct Stable Engine)
+ * Handles high-stability routing with an integrated pre-load screen.
  */
 (function() {
     'use strict';
 
     // 1. Core Variables Configuration
     const knockoff = true; 
-    const VERSION_TAG = 'v1.2.0 (Shader Stable)';
+    const VERSION_TAG = 'v1.4.0 (Stable)';
     const ACCESS_PASSWORD = 'Iamha';
+    const GAME_URL = "https://irv77.github.io/EaglerPocketMobile/demo/";
 
     // 2. Secret Menu Key Handler
-    // Listen globally for the Right Shift key activation
     window.addEventListener('keydown', function(event) {
         if (event.code === 'ShiftRight') {
             const enteredPassword = prompt("Enter menu access password:");
@@ -26,17 +26,15 @@
         }
     });
 
-    // Placeholder function where your custom adjustments/overlays go
     function initializeCustomMenu() {
         console.log("Custom engine configurations unlocked.");
-        // Your custom client modification logic can go here
     }
 
-    // 3. Automated Knockoff Setup Engine
+    // 3. Automated Setup Engine
     if (knockoff === true) {
         window.addEventListener('DOMContentLoaded', () => {
             
-            // Inject strict styling rules to stop screen bouncing and stabilize rendering engines
+            // Inject structural styling for the loading screen layer
             const styleFix = document.createElement('style');
             styleFix.innerHTML = `
                 html, body {
@@ -45,16 +43,13 @@
                     width: 100% !important;
                     height: 100% !important;
                     overflow: hidden !important;
-                    background-color: #000 !important;
-                    /* Core mobile stabilization rules */
-                    overscroll-behavior: none !important; 
-                    touch-action: none !important;
-                    -webkit-touch-callout: none !important;
+                    background-color: #0d0d0d !important;
+                    font-family: 'Segoe UI', sans-serif;
                     -webkit-user-select: none !important;
                     user-select: none !important;
                 }
                 
-                /* Chromium Loading Overlay */
+                /* High-Stability Loading Overlay Layout */
                 #jerg-loader {
                     position: fixed;
                     top: 0;
@@ -67,9 +62,7 @@
                     flex-direction: column;
                     align-items: center;
                     justify-content: center;
-                    font-family: 'Segoe UI', sans-serif;
                     z-index: 999999;
-                    transition: opacity 0.6s ease;
                 }
 
                 .spinner {
@@ -87,7 +80,7 @@
                     100% { transform: rotate(360deg); }
                 }
 
-                /* Stationary Text Version Tag Overlay */
+                /* Stationary Version Display Overlay */
                 #jerg-version {
                     position: fixed;
                     bottom: 12px;
@@ -96,23 +89,21 @@
                     font-family: monospace;
                     font-size: 11px;
                     z-index: 999998;
-                    pointer-events: none;
-                    text-shadow: 1px 1px 2px #000;
                     letter-spacing: 0.5px;
                 }
             `;
             document.head.appendChild(styleFix);
 
-            // Wipe out standard background menus to prioritize the mobile canvas layout
+            // Clear background components to draw the clean loader interface
             document.body.innerHTML = '';
 
-            // Generate Loading UI Screen
+            // Generate the Loader Interface elements
             const loader = document.createElement('div');
             loader.id = 'jerg-loader';
             loader.innerHTML = `
                 <div class="spinner"></div>
                 <h2 style="letter-spacing: 3px; margin: 0; color: #00ffcc; font-weight: 700;">JERGCRAFT MOBILE</h2>
-                <p style="color: #888; font-size: 13px; margin-top: 8px; letter-spacing: 1px;">Loading Chromium Shaders...</p>
+                <p style="color: #888; font-size: 13px; margin-top: 8px; letter-spacing: 1px;">Optimizing Environment...</p>
             `;
             document.body.appendChild(loader);
 
@@ -122,28 +113,10 @@
             versionDisplay.innerText = VERSION_TAG;
             document.body.appendChild(versionDisplay);
 
-            // Initialize the Fullscreen High-Performance Sandbox Game Canvas Frame
-            const mobileFrame = document.createElement('iframe');
-            mobileFrame.src = "https://irv77.github.io/EaglerPocketMobile/demo/";
-            mobileFrame.style.width = '100%';
-            mobileFrame.style.height = '100%';
-            mobileFrame.style.border = 'none';
-            mobileFrame.style.display = 'block';
-            mobileFrame.style.position = 'absolute';
-            mobileFrame.style.top = '0';
-            mobileFrame.style.left = '0';
-            mobileFrame.style.zIndex = '99995';
-
-            // High-performance feature policies to allow shader execution on mobile hardware runtimes
-            mobileFrame.setAttribute('allow', 'autoplay; gamepad; fullscreen; keyboard; pointer-lock; xr-spatial-tracking');
-            mobileFrame.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-pointer-lock allow-forms');
-
-            // Listen for structural frame rendering changes to hide loading layouts cleanly
-            mobileFrame.addEventListener('load', () => {
-                setTimeout(() => {
-                    loader.style.opacity = '0';
-                    setTimeout(() => loader.remove(), 600);
-                }, 2000); // 2-second canvas buffering time to safely compile WebGL shader pipelines
-            });
-
-            // Embed runtime engine element and
+            // Execution sequence: Display loader briefly, then cleanly route the window context
+            setTimeout(() => {
+                window.location.href = GAME_URL;
+            }, 1800); // 1.8-second display duration to ensure visual loader rendering completes
+        });
+    }
+})();
