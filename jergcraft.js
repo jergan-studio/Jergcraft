@@ -1,14 +1,14 @@
 /**
  * jergcraft.js
- * Version: v1.8.0 (Secure Overlay Menu Build)
- * Optimized for Vercel & Median.co. Adds a floating administrative panel button.
+ * Version: v1.9.0 (Admin Panel + Speed Optimization)
+ * Optimized for Vercel & Median.co. Adds an accelerated speed toggle to the menu.
  */
 (function() {
     'use strict';
 
     // 1. Core Variables Configuration
     const knockoff = true; 
-    const VERSION_TAG = 'v1.8.0 (Admin Panel)';
+    const VERSION_TAG = 'v1.9.0 (Speed Update)';
     const ACCESS_PASSWORD = 'Iamha';
     const GAME_URL = "https://irv77.github.io/EaglerPocketMobile/demo/";
 
@@ -149,6 +149,7 @@
                     border-radius: 5px;
                     cursor: pointer;
                     font-weight: bold;
+                    margin-top: 10px;
                 }
 
                 .panel-btn:active {
@@ -181,66 +182,4 @@
             adminButton.id = 'jerg-admin-trigger';
             adminButton.innerText = '⚙';
             adminButton.addEventListener('click', handleAdminAccess);
-            document.body.appendChild(adminButton);
-
-            // Generate Control Panel UI
-            const adminPanel = document.createElement('div');
-            adminPanel.id = 'jerg-admin-panel';
-            adminPanel.innerHTML = `
-                <h3>ADMIN UTILITIES</h3>
-                <div class="panel-row">
-                    <span>Performance Optimization</span>
-                    <input type="checkbox" id="opt-toggle" checked>
-                </div>
-                <div class="panel-row">
-                    <span>Shader Rendering Layer</span>
-                    <input type="checkbox" id="shader-toggle" checked>
-                </div>
-                <button class="panel-btn" id="close-panel-btn">CLOSE PANEL</button>
-            `;
-            document.body.appendChild(adminPanel);
-
-            // Close button functionality
-            document.getElementById('close-panel-btn').addEventListener('click', () => {
-                adminPanel.style.display = 'none';
-            });
-
-            // Initialize the Fullscreen High-Performance Frame
-            const mobileFrame = document.createElement('iframe');
-            mobileFrame.src = GAME_URL;
-            mobileFrame.id = 'game-canvas-frame';
-            mobileFrame.style.width = '100%';
-            mobileFrame.style.height = '100%';
-            mobileFrame.style.border = 'none';
-            mobileFrame.style.display = 'block';
-            mobileFrame.style.position = 'absolute';
-            mobileFrame.style.top = '0';
-            mobileFrame.style.left = '0';
-            mobileFrame.style.zIndex = '99990';
-
-            // Allow all underlying hardware pipelines (Pointer Lock, WebGL, Fullscreen)
-            mobileFrame.setAttribute('allow', 'autoplay; gamepad; fullscreen; keyboard; pointer-lock; xr-spatial-tracking');
-
-            // Hide loader screen layers smoothly once engine compilation clears
-            mobileFrame.addEventListener('load', () => {
-                setTimeout(() => {
-                    loader.style.opacity = '0';
-                    setTimeout(() => loader.remove(), 600);
-                }, 2000); 
-            });
-
-            // Append frame element directly into container space
-            document.body.appendChild(mobileFrame);
-
-            // Access handler function
-            function handleAdminAccess() {
-                const enteredPassword = prompt("Enter menu access password:");
-                if (enteredPassword === ACCESS_PASSWORD) {
-                    document.getElementById('jerg-admin-panel').style.display = 'block';
-                } else {
-                    alert("Incorrect password. Access denied.");
-                }
-            }
-        });
-    }
-})();
+            document.body.appendChild(adminButton    
