@@ -1,14 +1,14 @@
 /**
  * jergcraft.js
- * Version: v2.2.0 (Custom Input Modal Build)
- * Optimized for Vercel & Median.co. Replaces native prompts with an HTML input field.
+ * Version: v2.2.1 (Forced Button Layer Fix)
+ * Optimized for Vercel & Median.co. Ensures the button is always visible on screen.
  */
 (function() {
     'use strict';
 
     // 1. Core Variables Configuration
-    const knockoff = false; 
-    const VERSION_TAG = 'v2.2.0 (Modal Input)';
+    const knockoff = false; // Set to true for auto-mobile frame, false for standard menu choice
+    const VERSION_TAG = 'v2.2.1 (Button Layer Fix)';
     const ACCESS_PASSWORD = 'Iamha';
     const GAME_URL = "./game/index.html"; 
 
@@ -23,30 +23,31 @@
                 color: rgba(0, 255, 200, 0.35);
                 font-family: monospace;
                 font-size: 11px;
-                z-index: 999994;
+                z-index: 999999;
                 pointer-events: none;
                 text-shadow: 1px 1px 2px #000;
                 letter-spacing: 0.5px;
             }
 
+            /* Forced High-Priority Button Styling */
             #jerg-admin-trigger {
-                position: fixed;
-                top: 15px;
-                right: 15px;
-                width: 40px;
-                height: 40px;
-                background-color: rgba(20, 20, 20, 0.85);
-                border: 2px solid #00ffcc;
-                border-radius: 50%;
-                color: #00ffcc;
-                font-size: 20px;
-                font-weight: bold;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                z-index: 999998;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+                position: fixed !important;
+                top: 15px !important;
+                right: 15px !important;
+                width: 45px !important;
+                height: 45px !important;
+                background-color: #141414 !important;
+                border: 2px solid #00ffcc !important;
+                border-radius: 50% !important;
+                color: #00ffcc !important;
+                font-size: 24px !important;
+                font-weight: bold !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                cursor: pointer !important;
+                z-index: 1000000 !important; /* Forces button above all game elements and frames */
+                box-shadow: 0 4px 10px rgba(0,0,0,0.7) !important;
                 transition: background-color 0.2s, transform 0.1s;
             }
 
@@ -69,7 +70,7 @@
                 color: #fff;
                 font-family: 'Segoe UI', sans-serif;
                 box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-                z-index: 999999;
+                z-index: 1000001;
                 display: none;
                 text-align: center;
             }
@@ -128,7 +129,7 @@
                 color: #fff;
                 font-family: 'Segoe UI', sans-serif;
                 box-shadow: 0 10px 25px rgba(0,0,0,0.7);
-                z-index: 999999;
+                z-index: 1000001;
                 display: none;
                 user-select: none;
                 -webkit-user-select: none;
@@ -236,7 +237,7 @@
             adminPanel.style.display = 'none';
         });
 
-        // Local Storage Engine Integration Check
+        // Local Storage Engine Integration
         document.getElementById('speed-toggle').addEventListener('change', (e) => {
             const frame = document.getElementById('game-canvas-frame') || document.getElementById('game-frame');
             if (!frame) return;
@@ -245,7 +246,7 @@
                 try {
                     frame.contentWindow.localStorage.setItem('jerg_speed_modifier', 'active');
                 } catch (err) {
-                    console.log("Local execution tracking domain pending update layout.");
+                    console.log("Local execution tracking state pending domain synchronization.");
                 }
             } else {
                 try { frame.contentWindow.localStorage.removeItem('jerg_speed_modifier'); } catch (err) {}
@@ -318,27 +319,4 @@
             mobileFrame.src = GAME_URL;
             mobileFrame.id = 'game-canvas-frame';
             mobileFrame.style.width = '100%';
-            mobileFrame.style.height = '100%';
-            mobileFrame.style.border = 'none';
-            mobileFrame.style.display = 'block';
-            mobileFrame.style.position = 'absolute';
-            mobileFrame.style.top = '0';
-            mobileFrame.style.left = '0';
-            mobileFrame.style.zIndex = '99990';
-
-            mobileFrame.setAttribute('allow', 'autoplay; gamepad; fullscreen; keyboard; pointer-lock; xr-spatial-tracking');
-
-            mobileFrame.addEventListener('load', () => {
-                setTimeout(() => {
-                    loader.style.opacity = '0';
-                    setTimeout(() => loader.remove(), 600);
-                }, 2000); 
-            });
-
-            document.body.appendChild(mobileFrame);
-        }
-
-        // Always initialize panel overlay options cleanly over page content
-        injectAdminInterface();
-    });
-})();
+            mobileFrame.style.height = '10
