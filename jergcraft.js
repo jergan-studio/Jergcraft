@@ -7,7 +7,7 @@
     'use strict';
 
     // 1. Core Variables Configuration
-    const knockoff = false; 
+    const knockoff = true; 
     const VERSION_TAG = 'v2.3.0 (Panel Version Display)';
     const ACCESS_PASSWORD = 'Iamha';
     const GAME_URL = "./game/index.html"; 
