@@ -1,14 +1,14 @@
 /**
  * jergcraft.js
- * Version: v1.4.0 (Direct Stable Engine)
- * Handles high-stability routing with an integrated pre-load screen.
+ * Version: v1.5.0 (Embedded Sandbox-Free Engine)
+ * Launches full-screen mobile client directly inside the host DOM to bypass iframe sandbox blocks.
  */
 (function() {
     'use strict';
 
     // 1. Core Variables Configuration
     const knockoff = true; 
-    const VERSION_TAG = 'v1.4.0 (Stable)';
+    const VERSION_TAG = 'v1.5.0 (Stable Layer)';
     const ACCESS_PASSWORD = 'Iamha';
     const GAME_URL = "https://irv77.github.io/EaglerPocketMobile/demo/";
 
@@ -30,11 +30,11 @@
         console.log("Custom engine configurations unlocked.");
     }
 
-    // 3. Automated Setup Engine
+    // 3. Automated Knockoff Setup Engine
     if (knockoff === true) {
         window.addEventListener('DOMContentLoaded', () => {
             
-            // Inject structural styling for the loading screen layer
+            // Inject structural styling for the layout boundaries and loader
             const styleFix = document.createElement('style');
             styleFix.innerHTML = `
                 html, body {
@@ -43,13 +43,15 @@
                     width: 100% !important;
                     height: 100% !important;
                     overflow: hidden !important;
-                    background-color: #0d0d0d !important;
-                    font-family: 'Segoe UI', sans-serif;
+                    background-color: #000 !important;
+                    overscroll-behavior: none !important; 
+                    touch-action: none !important;
+                    -webkit-touch-callout: none !important;
                     -webkit-user-select: none !important;
                     user-select: none !important;
                 }
                 
-                /* High-Stability Loading Overlay Layout */
+                /* High-Visibility Loading Overlay Layout */
                 #jerg-loader {
                     position: fixed;
                     top: 0;
@@ -62,7 +64,9 @@
                     flex-direction: column;
                     align-items: center;
                     justify-content: center;
+                    font-family: 'Segoe UI', sans-serif;
                     z-index: 999999;
+                    transition: opacity 0.6s ease;
                 }
 
                 .spinner {
@@ -89,21 +93,23 @@
                     font-family: monospace;
                     font-size: 11px;
                     z-index: 999998;
+                    pointer-events: none;
+                    text-shadow: 1px 1px 2px #000;
                     letter-spacing: 0.5px;
                 }
             `;
             document.head.appendChild(styleFix);
 
-            // Clear background components to draw the clean loader interface
+            // Clear out standard page background structures
             document.body.innerHTML = '';
 
-            // Generate the Loader Interface elements
+            // Generate Loading UI Screen
             const loader = document.createElement('div');
             loader.id = 'jerg-loader';
             loader.innerHTML = `
                 <div class="spinner"></div>
                 <h2 style="letter-spacing: 3px; margin: 0; color: #00ffcc; font-weight: 700;">JERGCRAFT MOBILE</h2>
-                <p style="color: #888; font-size: 13px; margin-top: 8px; letter-spacing: 1px;">Optimizing Environment...</p>
+                <p style="color: #888; font-size: 13px; margin-top: 8px; letter-spacing: 1px;">Loading Assets...</p>
             `;
             document.body.appendChild(loader);
 
@@ -113,10 +119,32 @@
             versionDisplay.innerText = VERSION_TAG;
             document.body.appendChild(versionDisplay);
 
-            // Execution sequence: Display loader briefly, then cleanly route the window context
-            setTimeout(() => {
-                window.location.href = GAME_URL;
-            }, 1800); // 1.8-second display duration to ensure visual loader rendering completes
+            // Create a clean element frame without restrictive local sandbox rules
+            const mobileFrame = document.createElement('iframe');
+            mobileFrame.src = GAME_URL;
+            mobileFrame.style.width = '100%';
+            mobileFrame.style.height = '100%';
+            mobileFrame.style.border = 'none';
+            mobileFrame.style.display = 'block';
+            mobileFrame.style.position = 'absolute';
+            mobileFrame.style.top = '0';
+            mobileFrame.style.left = '0';
+            mobileFrame.style.zIndex = '99995';
+
+            // Allow all underlying hardware pipelines (Pointer Lock, WebGL, Fullscreen)
+            mobileFrame.setAttribute('allow', 'autoplay; gamepad; fullscreen; keyboard; pointer-lock; xr-spatial-tracking');
+
+            // Hide loader screen layers smoothly once engine compilation clears
+            mobileFrame.addEventListener('load', () => {
+                setTimeout(() => {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.remove(), 600);
+                }, 2000); 
+            });
+
+            // Append frame element directly into container space and give input focus
+            document.body.appendChild(mobileFrame);
+            mobileFrame.focus();
         });
     }
 })();
