@@ -238,4 +238,107 @@
 
         // Local Storage Engine Integration Check
         document.getElementById('speed-toggle').addEventListener('change', (e) => {
-            const frame = document.getElementById('game-canvas-frame') || document.getElementById('game-frame
+            const frame = document.getElementById('game-canvas-frame') || document.getElementById('game-frame');
+            if (!frame) return;
+
+            if (e.target.checked) {
+                try {
+                    frame.contentWindow.localStorage.setItem('jerg_speed_modifier', 'active');
+                } catch (err) {
+                    console.log("Local execution tracking domain pending update layout.");
+                }
+            } else {
+                try { frame.contentWindow.localStorage.removeItem('jerg_speed_modifier'); } catch (err) {}
+            }
+        });
+    }
+
+    // 3. Automated Routing Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+        if (knockoff === true) {
+            const loaderStyle = document.createElement('style');
+            loaderStyle.innerHTML = `
+                html, body {
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    width: 100% !important;
+                    height: 100% !important;
+                    overflow: hidden !important;
+                    background-color: #000 !important;
+                    overscroll-behavior: none !important; 
+                    touch-action: none !important;
+                    -webkit-touch-callout: none !important;
+                    -webkit-user-select: none !important;
+                    user-select: none !important;
+                }
+                #jerg-loader {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(135deg, #141414 0%, #050505 100%);
+                    color: #fff;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    font-family: 'Segoe UI', sans-serif;
+                    z-index: 999995;
+                    transition: opacity 0.6s ease;
+                }
+                .spinner {
+                    width: 60px;
+                    height: 60px;
+                    border: 5px solid #222;
+                    border-top: 5px solid #00ffcc;
+                    border-radius: 50%;
+                    animation: spin 0.8s linear infinite;
+                    margin-bottom: 20px;
+                }
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `;
+            document.head.appendChild(loaderStyle);
+
+            document.body.innerHTML = '';
+
+            const loader = document.createElement('div');
+            loader.id = 'jerg-loader';
+            loader.innerHTML = `
+                <div class="spinner"></div>
+                <h2 style="letter-spacing: 3px; margin: 0; color: #00ffcc; font-weight: 700;">JERGCRAFT MOBILE</h2>
+                <p style="color: #888; font-size: 13px; margin-top: 8px; letter-spacing: 1px;">Loading Assets...</p>
+            `;
+            document.body.appendChild(loader);
+
+            const mobileFrame = document.createElement('iframe');
+            mobileFrame.src = GAME_URL;
+            mobileFrame.id = 'game-canvas-frame';
+            mobileFrame.style.width = '100%';
+            mobileFrame.style.height = '100%';
+            mobileFrame.style.border = 'none';
+            mobileFrame.style.display = 'block';
+            mobileFrame.style.position = 'absolute';
+            mobileFrame.style.top = '0';
+            mobileFrame.style.left = '0';
+            mobileFrame.style.zIndex = '99990';
+
+            mobileFrame.setAttribute('allow', 'autoplay; gamepad; fullscreen; keyboard; pointer-lock; xr-spatial-tracking');
+
+            mobileFrame.addEventListener('load', () => {
+                setTimeout(() => {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.remove(), 600);
+                }, 2000); 
+            });
+
+            document.body.appendChild(mobileFrame);
+        }
+
+        // Always initialize panel overlay options cleanly over page content
+        injectAdminInterface();
+    });
+})();
