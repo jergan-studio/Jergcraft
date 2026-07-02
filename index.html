@@ -99,7 +99,7 @@
             z-index: 1;
         }
 
-        /* Server Dashboard Modal Window */
+        /* Server Dashboard Panel UI */
         #jerg-dashboard-modal {
             position: fixed;
             top: 50%;
@@ -134,53 +134,4 @@
         .dashboard-btn-group {
             display: flex;
             gap: 10px;
-            margin-top: 5px;
-        }
-        .dashboard-btn {
-            flex: 1;
-            padding: 10px;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 13px;
-        }
-        .btn-add { background: #00ffcc; color: #141414; }
-        .btn-close { background: #444; color: #fff; }
-    </style>
-</head>
-<body>
-
-    <div id="menu-container">
-        <h1>JERGCRAFT</h1>
-        <div class="button-group">
-            <button class="menu-btn" id="btn-manual-mobile">MOBILE</button>
-            <button class="menu-btn" id="btn-manual-comp">COMPUTER</button>
-        </div>
-        <div class="button-group">
-            <button class="menu-btn jerg-manage-btn" id="btn-open-jergservers">OPEN YOUR JERGSERVERS</button>
-        </div>
-    </div>
-
-    <div id="jerg-dashboard-modal">
-        <h3 style="color: #00ffcc; margin: 0 0 5px 0; letter-spacing: 1px;">JERGSERVER MANAGER</h3>
-        <p style="color: #888; font-size: 12px; margin: 0 0 20px 0;">Add custom ws:// or wss:// endpoints</p>
-        
-        <input type="text" id="jerg-input-name" class="dashboard-input" placeholder="Server Name">
-        <input type="text" id="jerg-input-url" class="dashboard-input" placeholder="ws://your-server-ip:8080">
-        
-        <div class="dashboard-btn-group">
-            <button class="dashboard-btn btn-add" id="btn-dashboard-submit">ADD JERGSERVER</button>
-            <button class="dashboard-btn btn-close" id="btn-dashboard-close">CLOSE</button>
-        </div>
-    </div>
-
-    <iframe 
-        id="game-frame"
-        allow="autoplay; gamepad; fullscreen; keyboard; pointer-lock; xr-spatial-tracking">
-    </iframe>
-
-    <script type="text/javascript" src="jergcraft.js"></script>
-
-</body>
-</html>
+            margin
