@@ -1,18 +1,18 @@
 /**
  * jergcraft.js
- * Version: v4.3.1 (CORS & Fallback Safe Core)
+ * Version: v4.3.2 (Distinct Mobile vs Computer Engine Isolation)
  */
 (function() {
     'use strict';
 
-    const knockoff = false; // true = load mobile automatically | false = show menu
+    const knockoff = false; // true = auto-load mobile | false = show menu selection
     const MOBILE_URL = "https://irv77.github.io/EaglerPocketMobile/demo/"; 
     const COMPUTER_URL = "https://eaglercraft.app/web/";
 
     const DEFAULT_SERVER_NAME = "JergServer Main";
     const DEFAULT_SERVER_WSS  = "wss://jerggames-server.onrender.com";
 
-    // Safe injection wrapper that won't crash the script if blocked
+    // Safe injection wrapper
     function injectServerIntoStorage(name, address) {
         try {
             let serverList = localStorage.getItem('eaglercraft_servers');
@@ -28,11 +28,22 @@
             localStorage.setItem('eaglercraft_servers', JSON.stringify(parsedList));
             return true;
         } catch (err) {
-            console.warn("[JergServer Core] Main storage restricted. Using frame pipeline.");
+            console.warn("[JergServer] Local storage access restricted.");
             return false;
         }
     }
 
+    // Direct Native Loader (Bypasses custom loading overlays entirely for clean desktop play)
+    function launchNativeFrame(targetSrc) {
+        const frame = document.getElementById('game-frame');
+        if (frame) {
+            frame.src = targetSrc;
+            frame.style.display = "block";
+            frame.focus();
+        }
+    }
+
+    // Interactive Loader Overlay (Used for Mobile/Knockoff structures to allow server configurations)
     function createLoaderInterface(targetSrc) {
         const loaderStyle = document.createElement('style');
         loaderStyle.innerHTML = `
@@ -72,7 +83,6 @@
         `;
         document.head.appendChild(loaderStyle);
 
-        // Run baseline injection
         injectServerIntoStorage(DEFAULT_SERVER_NAME, DEFAULT_SERVER_WSS);
 
         const loader = document.createElement('div');
@@ -127,17 +137,15 @@
             }
         });
 
-        // Safe frame implementation
         const frame = document.getElementById('game-frame');
         frame.src = targetSrc;
         frame.style.display = "block";
 
         frame.addEventListener('load', () => {
-            // Safe cross-origin push check
             try {
                 frame.contentWindow.localStorage.setItem('eaglercraft_servers', localStorage.getItem('eaglercraft_servers'));
             } catch (e) {
-                // Fails silently if CORS blocks internal storage injection
+                // Silently bypass cross-origin browser barriers
             }
 
             setTimeout(() => {
@@ -170,12 +178,14 @@
             if (mobileBtn && compBtn) {
                 mobileBtn.addEventListener('click', () => {
                     if (menuContainer) menuContainer.style.display = 'none';
+                    // Mobile utilizes custom loader utility screens
                     createLoaderInterface(MOBILE_URL);
                 });
 
                 compBtn.addEventListener('click', () => {
                     if (menuContainer) menuContainer.style.display = 'none';
-                    createLoaderInterface(COMPUTER_URL);
+                    // Computer fires pure native frame to completely bypass knockoff layouts
+                    launchNativeFrame(COMPUTER_URL);
                 });
             }
         }
