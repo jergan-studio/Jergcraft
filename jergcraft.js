@@ -1,18 +1,17 @@
 /**
  * jergcraft.js
- * Version: v4.3.2 (Distinct Mobile vs Computer Engine Isolation)
+ * Version: v4.4.1 (Knockoff Compatible Menu Hub)
  */
 (function() {
     'use strict';
 
-    const knockoff = false; // true = auto-load mobile | false = show menu selection
+    // Toggle execution: true = bypass menu into knockoff mobile layout | false = normal choice menu
+    const knockoff = false; 
+
     const MOBILE_URL = "https://irv77.github.io/EaglerPocketMobile/demo/"; 
     const COMPUTER_URL = "https://eaglercraft.app/web/";
 
-    const DEFAULT_SERVER_NAME = "JergServer Main";
-    const DEFAULT_SERVER_WSS  = "wss://jerggames-server.onrender.com";
-
-    // Safe injection wrapper
+    // Internal tracker injection engine
     function injectServerIntoStorage(name, address) {
         try {
             let serverList = localStorage.getItem('eaglercraft_servers');
@@ -26,168 +25,90 @@
             parsedList.unshift({ name: name, addr: address, hide: false });
             
             localStorage.setItem('eaglercraft_servers', JSON.stringify(parsedList));
+            console.log(`[JergServer Core] Registered: ${name} -> ${address}`);
             return true;
         } catch (err) {
-            console.warn("[JergServer] Local storage access restricted.");
+            console.warn("[JergServer Core] Local browser database write restricted.");
             return false;
         }
     }
 
-    // Direct Native Loader (Bypasses custom loading overlays entirely for clean desktop play)
-    function launchNativeFrame(targetSrc) {
+    // Standard engine rendering launcher
+    function launchGameInstance(targetSrc) {
+        const menuContainer = document.getElementById('menu-container');
         const frame = document.getElementById('game-frame');
+        
+        if (menuContainer) menuContainer.style.display = 'none';
         if (frame) {
             frame.src = targetSrc;
             frame.style.display = "block";
-            frame.focus();
-        }
-    }
-
-    // Interactive Loader Overlay (Used for Mobile/Knockoff structures to allow server configurations)
-    function createLoaderInterface(targetSrc) {
-        const loaderStyle = document.createElement('style');
-        loaderStyle.innerHTML = `
-            #jerg-loader {
-                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                background: linear-gradient(135deg, #141414 0%, #050505 100%);
-                color: #fff; display: flex; flex-direction: column;
-                align-items: center; justify-content: center; font-family: sans-serif;
-                z-index: 999995; transition: opacity 0.6s ease;
-            }
-            .spinner {
-                width: 50px; height: 50px; border: 5px solid #222;
-                border-top: 5px solid #00ffcc; border-radius: 50%;
-                animation: jerg-spin 0.8s linear infinite; margin-bottom: 20px;
-            }
-            @keyframes jerg-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-            .jerg-load-btn {
-                margin-top: 25px; background: #141414; color: #00ffcc; border: 2px solid #00ffcc;
-                padding: 10px 20px; font-size: 14px; font-weight: bold; letter-spacing: 1px;
-                border-radius: 5px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-                transition: all 0.2s ease; z-index: 999999;
-            }
-            #jerg-input-modal {
-                position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-                width: 300px; background: #141414; border: 2px solid #00ffcc; border-radius: 8px;
-                padding: 20px; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-                z-index: 1000005; display: none; text-align: center;
-            }
-            .jerg-modal-input {
-                width: 90%; background: #222; border: 1px solid #444; padding: 10px;
-                border-radius: 4px; color: #fff; text-align: center; font-size: 14px; margin-bottom: 10px;
-            }
-            .jerg-modal-btn-group { display: flex; gap: 10px; justify-content: center; }
-            .jerg-modal-btn { flex: 1; padding: 8px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; }
-            .jerg-btn-submit { background: #00ffcc; color: #141414; }
-            .jerg-btn-cancel { background: #444; color: #fff; }
-        `;
-        document.head.appendChild(loaderStyle);
-
-        injectServerIntoStorage(DEFAULT_SERVER_NAME, DEFAULT_SERVER_WSS);
-
-        const loader = document.createElement('div');
-        loader.id = 'jerg-loader';
-        loader.innerHTML = `
-            <div class="spinner"></div>
-            <h2 style="letter-spacing: 3px; margin: 0; color: #00ffcc; font-weight: 700;">JERGCRAFT</h2>
-            <p style="color: #888; font-size: 13px; margin-top: 8px; letter-spacing: 1px;">Loading Framework...</p>
-            <button class="jerg-load-btn" id="load-jergserver-trigger">LOAD JERGSERVER</button>
-        `;
-        document.body.appendChild(loader);
-
-        const inputModal = document.createElement('div');
-        inputModal.id = 'jerg-input-modal';
-        inputModal.innerHTML = `
-            <h4 style="color:#00ffcc; margin:0 0 15px 0;">CONNECT CUSTOM DOMAIN</h4>
-            <input type="text" id="jerg-srv-name" class="jerg-modal-input" placeholder="Server Name">
-            <input type="text" id="jerg-srv-url" class="jerg-modal-input" placeholder="wss://your-domain.com">
-            <div class="jerg-modal-btn-group">
-                <button class="jerg-modal-btn jerg-btn-submit" id="jerg-submit-domain">ADD SERVER</button>
-                <button class="jerg-modal-btn jerg-btn-cancel" id="jerg-cancel-domain">CANCEL</button>
-            </div>
-        `;
-        document.body.appendChild(inputModal);
-
-        const triggerBtn = document.getElementById('load-jergserver-trigger');
-        const submitBtn = document.getElementById('jerg-submit-domain');
-        const cancelBtn = document.getElementById('jerg-cancel-domain');
-        const srvNameInput = document.getElementById('jerg-srv-name');
-        const srvUrlInput = document.getElementById('jerg-srv-url');
-
-        triggerBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            srvNameInput.value = "";
-            srvUrlInput.value = "wss://";
-            inputModal.style.display = 'block';
-            srvNameInput.focus();
-        });
-
-        cancelBtn.addEventListener('click', () => { inputModal.style.display = 'none'; });
-
-        submitBtn.addEventListener('click', () => {
-            const name = srvNameInput.value.trim() || "Custom Server";
-            const url = srvUrlInput.value.trim();
-            if (!url.startsWith("ws://") && !url.startsWith("wss://")) {
-                alert("Must use wss:// or ws://");
-                return;
-            }
-            if (injectServerIntoStorage(name, url)) {
-                alert("Server saved!");
-                inputModal.style.display = 'none';
-            }
-        });
-
-        const frame = document.getElementById('game-frame');
-        frame.src = targetSrc;
-        frame.style.display = "block";
-
-        frame.addEventListener('load', () => {
-            try {
-                frame.contentWindow.localStorage.setItem('eaglercraft_servers', localStorage.getItem('eaglercraft_servers'));
-            } catch (e) {
-                // Silently bypass cross-origin browser barriers
-            }
-
-            setTimeout(() => {
-                if (inputModal.style.display !== 'block') {
-                    loader.style.opacity = '0';
-                    setTimeout(() => loader.remove(), 600);
-                } else {
-                    const watcher = setInterval(() => {
-                        if (inputModal.style.display !== 'block') {
-                            clearInterval(watcher);
-                            loader.style.opacity = '0';
-                            setTimeout(() => loader.remove(), 600);
-                        }
-                    }, 500);
+            
+            frame.addEventListener('load', () => {
+                try {
+                    frame.contentWindow.localStorage.setItem('eaglercraft_servers', localStorage.getItem('eaglercraft_servers'));
+                } catch (e) {
+                    // Fail silently over cross-domain sandbox lines
                 }
-            }, 2000);
-        });
+                frame.focus();
+            });
+        }
     }
 
     function initAppEngine() {
         const menuContainer = document.getElementById('menu-container');
+        const openDashBtn = document.getElementById('btn-open-jergservers');
+        const closeDashBtn = document.getElementById('btn-dashboard-close');
+        const submitDashBtn = document.getElementById('btn-dashboard-submit');
+        const dashModal = document.getElementById('jerg-dashboard-modal');
+        
+        const nameInput = document.getElementById('jerg-input-name');
+        const urlInput = document.getElementById('jerg-input-url');
 
+        // --- CHECK KNOCKOFF ROUTING STATUS ---
         if (knockoff === true) {
             if (menuContainer) menuContainer.remove();
-            createLoaderInterface(MOBILE_URL);
-        } else {
-            const mobileBtn = document.getElementById('btn-manual-mobile');
-            const compBtn = document.getElementById('btn-manual-comp');
+            if (dashModal) dashModal.remove();
+            launchGameInstance(MOBILE_URL);
+            return; // Exit out to prevent menu attachments
+        }
 
-            if (mobileBtn && compBtn) {
-                mobileBtn.addEventListener('click', () => {
-                    if (menuContainer) menuContainer.style.display = 'none';
-                    // Mobile utilizes custom loader utility screens
-                    createLoaderInterface(MOBILE_URL);
-                });
+        // --- ATTACH MAIN MENU BUTTON LISTENERS (knockoff = false) ---
+        document.getElementById('btn-manual-mobile').addEventListener('click', () => launchGameInstance(MOBILE_URL));
+        document.getElementById('btn-manual-comp').addEventListener('click', () => launchGameInstance(COMPUTER_URL));
 
-                compBtn.addEventListener('click', () => {
-                    if (menuContainer) menuContainer.style.display = 'none';
-                    // Computer fires pure native frame to completely bypass knockoff layouts
-                    launchNativeFrame(COMPUTER_URL);
-                });
-            }
+        if (openDashBtn && dashModal) {
+            openDashBtn.addEventListener('click', () => {
+                nameInput.value = "";
+                urlInput.value = "ws://"; // Defaults directly to standard ws:// layout format
+                dashModal.style.display = 'block';
+                nameInput.focus();
+            });
+        }
+
+        if (closeDashBtn && dashModal) {
+            closeDashBtn.addEventListener('click', () => {
+                dashModal.style.display = 'none';
+            });
+        }
+
+        if (submitDashBtn) {
+            submitDashBtn.addEventListener('click', () => {
+                const name = nameInput.value.trim() || "JergServer Node";
+                const url = urlInput.value.trim();
+
+                // Accepts both standard unencrypted ws:// and secure wss:// protocols
+                if (!url.startsWith("ws://") && !url.startsWith("wss://")) {
+                    alert("Protocol Error! Address string must begin with ws:// or wss://");
+                    return;
+                }
+
+                if (injectServerIntoStorage(name, url)) {
+                    alert(`Successfully added "${name}" to your server list!`);
+                    if (dashModal) dashModal.style.display = 'none';
+                } else {
+                    alert("Failed to write connection profiles.");
+                }
+            });
         }
     }
 
