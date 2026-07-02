@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Jergcraft</title>
-    
+
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
@@ -81,6 +81,7 @@
             color: #00ffcc;
             border: 2px solid #00ffcc;
         }
+
         .jerg-manage-btn:hover {
             background-color: #00ffcc;
             color: #141414;
@@ -119,6 +120,7 @@
             text-align: center;
             font-family: sans-serif;
         }
+
         .dashboard-input {
             width: 90%;
             background: #222;
@@ -131,14 +133,17 @@
             margin-bottom: 12px;
             outline: none;
         }
+
         .dashboard-input:focus {
             border-color: #00ffcc;
         }
+
         .dashboard-btn-group {
             display: flex;
             gap: 10px;
             margin-top: 5px;
         }
+
         .dashboard-btn {
             flex: 1;
             padding: 10px;
@@ -148,30 +153,33 @@
             font-weight: bold;
             font-size: 13px;
         }
+
         .btn-add { background: #00ffcc; color: #141414; }
         .btn-close { background: #444; color: #fff; }
     </style>
 </head>
+
 <body>
 
     <div id="menu-container">
         <h1>JERGCRAFT</h1>
+
         <div class="button-group">
             <button class="menu-btn" id="btn-manual-mobile">MOBILE</button>
             <button class="menu-btn" id="btn-manual-comp">COMPUTER</button>
         </div>
+
         <div class="button-group">
             <button class="menu-btn jerg-manage-btn" id="btn-open-jergservers">OPEN YOUR JERGSERVERS</button>
         </div>
     </div>
 
     <div id="jerg-dashboard-modal">
-        <h3 style="color: #00ffcc; margin: 0 0 5px 0; letter-spacing: 1px;">JERGSERVER MANAGER</h3>
-        <p style="color: #888; font-size: 12px; margin: 0 0 20px 0;">Connect your secure https:// domain servers</p>
-        
+        <h3 style="color: #00ffcc; margin: 0 0 5px 0;">JERGSERVER MANAGER</h3>
+
         <input type="text" id="jerg-input-name" class="dashboard-input" placeholder="Server Name">
         <input type="text" id="jerg-input-url" class="dashboard-input" placeholder="https://your-domain.com">
-        
+
         <div class="dashboard-btn-group">
             <button class="dashboard-btn btn-add" id="btn-dashboard-submit">ADD JERGSERVER</button>
             <button class="dashboard-btn btn-close" id="btn-dashboard-close">CLOSE</button>
@@ -182,6 +190,18 @@
         id="game-frame"
         allow="autoplay; gamepad; fullscreen; keyboard; pointer-lock; xr-spatial-tracking">
     </iframe>
+
+    <!-- ✅ NEW: AUTO OPEN HOOK -->
+    <script>
+        window.openJergServer = function(url) {
+            document.getElementById("menu-container").style.display = "none";
+            document.getElementById("jerg-dashboard-modal").style.display = "none";
+
+            const frame = document.getElementById("game-frame");
+            frame.style.display = "block";
+            frame.src = url;
+        };
+    </script>
 
     <script type="text/javascript" src="jergcraft.js?v=1.0.1"></script>
 
