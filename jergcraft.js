@@ -1,12 +1,13 @@
 /**
  * jergcraft.js
- * Version: v4.4.5 (Crash-Proof Button Pipeline)
+ * Version: v4.4.6 (Cache Isolation & Console Hardened Runtime)
  */
 (function() {
     'use strict';
 
-    // Settings Toggle
-    const knockoff = false; // true = load mobile automatically | false = show interactive menu
+    console.log("[Jergcraft Core] Engine initialized.");
+
+    const knockoff = false; 
 
     const MOBILE_URL = "https://irv77.github.io/EaglerPocketMobile/demo/"; 
     const COMPUTER_URL = "https://eaglercraft.app/web/";
@@ -26,12 +27,13 @@
             localStorage.setItem('eaglercraft_servers', JSON.stringify(parsedList));
             return true;
         } catch (err) {
-            console.warn("[JergServer Core] Storage update restricted.");
+            console.warn("[JergServer Core] Database access blocked.");
             return false;
         }
     }
 
     function launchGameInstance(targetSrc) {
+        console.log(`[Jergcraft Core] Swapping screens. Loading target source: ${targetSrc}`);
         const menuContainer = document.getElementById('menu-container');
         const frame = document.getElementById('game-frame');
         
@@ -50,10 +52,10 @@
     }
 
     function initAppEngine() {
+        console.log("[Jergcraft Core] Executing core layout configurations.");
         const menuContainer = document.getElementById('menu-container');
         const dashModal = document.getElementById('jerg-dashboard-modal');
         
-        // --- 1. HANDLING AUTOMATIC KNOCKOFF ROUTING ---
         if (knockoff === true) {
             if (menuContainer) menuContainer.remove();
             if (dashModal) dashModal.remove();
@@ -61,39 +63,38 @@
             return; 
         }
 
-        // --- 2. SAFE WORKING BUTTON BINDINGS ---
         const mobileBtn = document.getElementById('btn-manual-mobile');
         if (mobileBtn) {
-            mobileBtn.addEventListener('click', function() { launchGameInstance(MOBILE_URL); });
-        }
+            mobileBtn.onclick = function() { launchGameInstance(MOBILE_URL); };
+        } else { console.error("Mobile button element missing from DOM tree!"); }
 
         const compBtn = document.getElementById('btn-manual-comp');
         if (compBtn) {
-            compBtn.addEventListener('click', function() { launchGameInstance(COMPUTER_URL); });
-        }
+            compBtn.onclick = function() { launchGameInstance(COMPUTER_URL); };
+        } else { console.error("Computer button element missing from DOM tree!"); }
 
         const openDashBtn = document.getElementById('btn-open-jergservers');
         const nameInput = document.getElementById('jerg-input-name');
         const urlInput = document.getElementById('jerg-input-url');
         if (openDashBtn && dashModal) {
-            openDashBtn.addEventListener('click', function() {
+            openDashBtn.onclick = function() {
                 if (nameInput) nameInput.value = "";
                 if (urlInput) urlInput.value = "https://"; 
                 dashModal.style.display = 'block';
                 if (nameInput) nameInput.focus();
-            });
+            };
         }
 
         const closeDashBtn = document.getElementById('btn-dashboard-close');
         if (closeDashBtn && dashModal) {
-            closeDashBtn.addEventListener('click', function() {
+            closeDashBtn.onclick = function() {
                 dashModal.style.display = 'none';
-            });
+            };
         }
 
         const submitDashBtn = document.getElementById('btn-dashboard-submit');
         if (submitDashBtn) {
-            submitDashBtn.addEventListener('click', function() {
+            submitDashBtn.onclick = function() {
                 if (!nameInput || !urlInput) return;
                 
                 const name = nameInput.value.trim() || "JergServer Secure Node";
@@ -106,7 +107,7 @@
                 }
 
                 if (!url.startsWith("ws://") && !url.startsWith("wss://")) {
-                    alert("Format Error! Use a standard address, 'https://', or 'wss://' links.");
+                    alert("Format Error! Use a standard address starting with 'https://' or 'wss://'");
                     return;
                 }
 
@@ -114,16 +115,17 @@
                     alert(`Successfully added server: "${name}"`);
                     if (dashModal) dashModal.style.display = 'none';
                 } else {
-                    alert("Failed to write server configurations.");
+                    alert("Failed to save server details.");
                 }
-            });
+            };
         }
     }
 
-    // Runs logic layout once components are safe and ready
+    // Direct universal fallback loading triggers
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
         initAppEngine();
     } else {
         window.addEventListener('DOMContentLoaded', initAppEngine);
+        window.addEventListener('load', initAppEngine);
     }
 })();
