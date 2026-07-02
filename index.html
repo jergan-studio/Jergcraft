@@ -28,14 +28,13 @@
             left: 0;
             width: 100%;
             height: 100%;
-            display: flex !important;
+            display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             background: linear-gradient(135deg, #1c1c1c 0%, #0d0d0d 100%);
             z-index: 999;
             opacity: 1;
-            transition: opacity 0.4s ease;
         }
 
         h1 {
@@ -103,7 +102,6 @@
             z-index: 1;
         }
 
-        /* Server Dashboard Panel UI Overlay Styling */
         #jerg-dashboard-modal {
             position: fixed;
             top: 50%;
@@ -169,4 +167,23 @@
 
     <div id="jerg-dashboard-modal">
         <h3 style="color: #00ffcc; margin: 0 0 5px 0; letter-spacing: 1px;">JERGSERVER MANAGER</h3>
-        <p style="color: #888; font-size: 12px; margin:
+        <p style="color: #888; font-size: 12px; margin: 0 0 20px 0;">Connect your secure https:// domain servers</p>
+        
+        <input type="text" id="jerg-input-name" class="dashboard-input" placeholder="Server Name">
+        <input type="text" id="jerg-input-url" class="dashboard-input" placeholder="https://your-domain.com">
+        
+        <div class="dashboard-btn-group">
+            <button class="dashboard-btn btn-add" id="btn-dashboard-submit">ADD JERGSERVER</button>
+            <button class="dashboard-btn btn-close" id="btn-dashboard-close">CLOSE</button>
+        </div>
+    </div>
+
+    <iframe 
+        id="game-frame"
+        allow="autoplay; gamepad; fullscreen; keyboard; pointer-lock; xr-spatial-tracking">
+    </iframe>
+
+    <script type="text/javascript" src="jergcraft.js"></script>
+
+</body>
+</html>
