@@ -22,7 +22,6 @@
             -webkit-user-select: none;
         }
 
-        /* Enforces absolute fallback visibility layout parameters */
         #menu-container {
             position: fixed;
             top: 0;
@@ -104,7 +103,7 @@
             z-index: 1;
         }
 
-        /* Server Management Modal Framework Overlay Styling */
+        /* Server Dashboard Panel UI Overlay Styling */
         #jerg-dashboard-modal {
             position: fixed;
             top: 50%;
@@ -170,23 +169,4 @@
 
     <div id="jerg-dashboard-modal">
         <h3 style="color: #00ffcc; margin: 0 0 5px 0; letter-spacing: 1px;">JERGSERVER MANAGER</h3>
-        <p style="color: #888; font-size: 12px; margin: 0 0 20px 0;">Add custom ws:// or wss:// endpoints</p>
-        
-        <input type="text" id="jerg-input-name" class="dashboard-input" placeholder="Server Name">
-        <input type="text" id="jerg-input-url" class="dashboard-input" placeholder="ws://your-server-ip:8080">
-        
-        <div class="dashboard-btn-group">
-            <button class="dashboard-btn btn-add" id="btn-dashboard-submit">ADD JERGSERVER</button>
-            <button class="dashboard-btn btn-close" id="btn-dashboard-close">CLOSE</button>
-        </div>
-    </div>
-
-    <iframe 
-        id="game-frame"
-        allow="autoplay; gamepad; fullscreen; keyboard; pointer-lock; xr-spatial-tracking">
-    </iframe>
-
-    <script type="text/javascript" src="jergcraft.js"></script>
-
-</body>
-</html>
+        <p style="color: #888; font-size: 12px; margin:
