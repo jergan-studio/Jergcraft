@@ -180,4 +180,110 @@
             loader.id = 'jerg-loader';
             loader.innerHTML = `
                 <div class="spinner"></div>
-                <h2 style="letter-spacing: 3px; margin: 0; color: #00ffcc; font
+                <h2 style="letter-spacing: 3px; margin: 0; color: #00ffcc; font-weight: 700;">JERGCRAFT MOBILE</h2>
+                <p style="color: #888; font-size: 13px; margin-top: 8px; letter-spacing: 1px;">Loading Framework Assets...</p>
+                <button class="jerg-load-btn" id="load-jergserver-trigger">LOAD JERGSERVER</button>
+            `;
+            document.body.appendChild(loader);
+
+            // Construct Custom Domain Input Dialog Box
+            const inputModal = document.createElement('div');
+            inputModal.id = 'jerg-input-modal';
+            inputModal.innerHTML = `
+                <h4>CONNECT CUSTOM DOMAIN</h4>
+                <input type="text" id="jerg-srv-name" class="jerg-modal-input" placeholder="Server Name (e.g., My Server)">
+                <input type="text" id="jerg-srv-url" class="jerg-modal-input" placeholder="wss://your-domain.com">
+                <div class="jerg-modal-btn-group">
+                    <button class="jerg-modal-btn jerg-btn-submit" id="jerg-submit-domain">ADD SERVER</button>
+                    <button class="jerg-modal-btn jerg-btn-cancel" id="jerg-cancel-domain">CANCEL</button>
+                </div>
+            `;
+            document.body.appendChild(inputModal);
+
+            // --- INPUT BOX LOGIC AND EVENT LISTENERS ---
+            const triggerBtn = document.getElementById('load-jergserver-trigger');
+            const submitBtn = document.getElementById('jerg-submit-domain');
+            const cancelBtn = document.getElementById('jerg-cancel-domain');
+            const srvNameInput = document.getElementById('jerg-srv-name');
+            const srvUrlInput = document.getElementById('jerg-srv-url');
+
+            triggerBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Avoid clicking elements underneath
+                srvNameInput.value = "";
+                srvUrlInput.value = "wss://";
+                inputModal.style.display = 'block';
+                srvNameInput.focus();
+            });
+
+            cancelBtn.addEventListener('click', () => {
+                inputModal.style.display = 'none';
+            });
+
+            submitBtn.addEventListener('click', processCustomDomainInput);
+
+            function processCustomDomainInput() {
+                const name = srvNameInput.value.trim() || "Custom JergServer";
+                const url = srvUrlInput.value.trim();
+
+                if (!url.startsWith("ws://") && !url.startsWith("wss://")) {
+                    alert("Invalid Protocol! Your domain address must start with wss:// or ws://");
+                    return;
+                }
+
+                // Inject custom entry directly into internal client engine configurations
+                const success = injectServerIntoStorage(name, url);
+                
+                if (success) {
+                    alert(`Successfully added "${name}" to your multiplayer index!`);
+                    inputModal.style.display = 'none';
+                } else {
+                    alert("Error saving configuration data.");
+                }
+            }
+
+            // Create primary Game Window Core Canvas Frame
+            const mobileFrame = document.createElement('iframe');
+            mobileFrame.src = GAME_URL;
+            mobileFrame.id = 'game-canvas-frame';
+            mobileFrame.style.width = '100%';
+            mobileFrame.style.height = '100%';
+            mobileFrame.style.border = 'none';
+            mobileFrame.style.display = 'block';
+            mobileFrame.style.position = 'absolute';
+            mobileFrame.style.top = '0';
+            mobileFrame.style.left = '0';
+            mobileFrame.style.zIndex = '99990';
+
+            mobileFrame.setAttribute('allow', 'autoplay; gamepad; fullscreen; keyboard; pointer-lock; xr-spatial-tracking');
+
+            mobileFrame.addEventListener('load', () => {
+                // If the load screen screen is clear, hide loading curtains automatically
+                setTimeout(() => {
+                    // Only auto-remove if the user isn't currently using the pop-up menu container box
+                    if (inputModal.style.display !== 'block') {
+                        loader.style.opacity = '0';
+                        setTimeout(() => loader.remove(), 600);
+                    } else {
+                        // If they are typing, look out for when they close the modal box to remove the screen wrapper
+                        const closeChecker = setInterval(() => {
+                            if (inputModal.style.display !== 'block') {
+                                clearInterval(closeChecker);
+                                loader.style.opacity = '0';
+                                setTimeout(() => loader.remove(), 600);
+                            }
+                        }, 500);
+                    }
+                }, 2500); 
+            });
+
+            document.body.appendChild(mobileFrame);
+        }
+    }
+
+    // Safety fallback checking status before initializing scripts
+    if (document.readyState === 'loading') {
+        window.addEventListener('DOMContentLoaded', initAppEngine);
+    } else {
+        initAppEngine();
+    }
+})();
