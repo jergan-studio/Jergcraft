@@ -76,18 +76,6 @@
             border-color: #888888;
         }
 
-        .jerg-manage-btn {
-            background-color: #141414;
-            color: #00ffcc;
-            border: 2px solid #00ffcc;
-        }
-
-        .jerg-manage-btn:hover {
-            background-color: #00ffcc;
-            color: #141414;
-            border-color: #00ffcc;
-        }
-
         .menu-btn:active {
             transform: scale(0.96);
         }
@@ -168,10 +156,6 @@
             <button class="menu-btn" id="btn-manual-mobile">MOBILE</button>
             <button class="menu-btn" id="btn-manual-comp">COMPUTER</button>
         </div>
-
-        <div class="button-group">
-            <button class="menu-btn jerg-manage-btn" id="btn-open-jergservers">OPEN YOUR JERGSERVERS</button>
-        </div>
     </div>
 
     <div id="jerg-dashboard-modal">
@@ -190,18 +174,6 @@
         id="game-frame"
         allow="autoplay; gamepad; fullscreen; keyboard; pointer-lock; xr-spatial-tracking">
     </iframe>
-
-    <!-- ✅ NEW: AUTO OPEN HOOK -->
-    <script>
-        window.openJergServer = function(url) {
-            document.getElementById("menu-container").style.display = "none";
-            document.getElementById("jerg-dashboard-modal").style.display = "none";
-
-            const frame = document.getElementById("game-frame");
-            frame.style.display = "block";
-            frame.src = url;
-        };
-    </script>
 
     <script type="text/javascript" src="jergcraft.js?v=1.0.1"></script>
 
