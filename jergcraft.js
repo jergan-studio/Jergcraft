@@ -7,7 +7,7 @@
     'use strict';
 
     // 1. Core Variables Configuration
-    const knockoff = true; // Set to true to automatically launch full-screen framework
+    const knockoff = false; // Set to true to automatically launch full-screen framework
     const GAME_URL = "https://irv77.github.io/EaglerPocketMobile/demo/"; 
     
     // Default Fallback Server
