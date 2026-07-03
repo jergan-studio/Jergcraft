@@ -152,7 +152,6 @@
     <div id="menu-container">
         <h1>JERGCRAFT</h1>
 
-        <!-- UPDATE TEXT -->
         <div style="color:#888;font-size:14px;margin-bottom:20px;">
             UPD!: theres none
         </div>
@@ -160,7 +159,6 @@
         <div class="button-group">
             <button class="menu-btn" id="btn-manual-mobile">MOBILE</button>
             <button class="menu-btn" id="btn-manual-comp">COMPUTER</button>
-            <button class="menu-btn" id="btn-restart-computer">RESTART COMPUTER MODE</button>
         </div>
     </div>
 
@@ -185,7 +183,6 @@
 
     <script type="text/javascript" src="jergcraft.js?v=1.0.1"></script>
 
-    <!-- COOKIE SYSTEM -->
     <script>
         function setCookie(name, value, days) {
             const d = new Date();
@@ -197,18 +194,6 @@
             const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
             return match ? match[2] : null;
         }
-
-        window.addEventListener("load", () => {
-            const mode = getCookie("jerg_mode");
-            if (mode === "computer") {
-                document.getElementById("btn-manual-comp")?.click();
-            }
-        });
-
-        document.getElementById("btn-restart-computer").onclick = () => {
-            setCookie("jerg_mode", "computer", 7);
-            location.reload();
-        };
     </script>
 
 </body>
