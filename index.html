@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Jergcraft</title>
-    
+
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
@@ -74,17 +74,6 @@
         .menu-btn:hover {
             background-color: #444444;
             border-color: #888888;
-        }
-
-        .jerg-manage-btn {
-            background-color: #141414;
-            color: #00ffcc;
-            border: 2px solid #00ffcc;
-        }
-        .jerg-manage-btn:hover {
-            background-color: #00ffcc;
-            color: #141414;
-            border-color: #00ffcc;
         }
 
         .menu-btn:active {
@@ -157,12 +146,13 @@
         .btn-close { background: #444; color: #fff; }
     </style>
 </head>
+
 <body>
 
     <div id="menu-container">
         <h1>JERGCRAFT</h1>
 
-        <!-- NEW TEXT -->
+        <!-- UPDATE TEXT -->
         <div style="color:#888;font-size:14px;margin-bottom:20px;">
             UPD!: theres none
         </div>
@@ -170,6 +160,7 @@
         <div class="button-group">
             <button class="menu-btn" id="btn-manual-mobile">MOBILE</button>
             <button class="menu-btn" id="btn-manual-comp">COMPUTER</button>
+            <button class="menu-btn" id="btn-restart-computer">RESTART COMPUTER MODE</button>
         </div>
     </div>
 
@@ -193,6 +184,32 @@
     </iframe>
 
     <script type="text/javascript" src="jergcraft.js?v=1.0.1"></script>
+
+    <!-- COOKIE SYSTEM -->
+    <script>
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days*24*60*60*1000));
+            document.cookie = name + "=" + value + ";expires=" + d.toUTCString() + ";path=/";
+        }
+
+        function getCookie(name) {
+            const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+            return match ? match[2] : null;
+        }
+
+        window.addEventListener("load", () => {
+            const mode = getCookie("jerg_mode");
+            if (mode === "computer") {
+                document.getElementById("btn-manual-comp")?.click();
+            }
+        });
+
+        document.getElementById("btn-restart-computer").onclick = () => {
+            setCookie("jerg_mode", "computer", 7);
+            location.reload();
+        };
+    </script>
 
 </body>
 </html>
