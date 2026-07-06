@@ -10,7 +10,7 @@
     const knockoff = false; 
 
     const MOBILE_URL = "https://irv77.github.io/EaglerPocketMobile/demo/"; 
-    const COMPUTER_URL = "https://jerg-crafter.vercel.app/eaglercraft/index.html";
+    const COMPUTER_URL = "https://jerg-crafter.vercel.app/jergcraft/index.html";
 
     function injectServerIntoStorage(name, address) {
         try {
