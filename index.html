@@ -3,131 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Jergcraft Live WebSocket Terminal</title>
+    <title>Jergcraft</title>
+    
     <style>
         html, body {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden; background-color: #020617;
-            font-family: 'Courier New', Courier, monospace;
-            color: #38bdf8; user-select: none;
-        }
-        
-        /* Top Navigation HUD */
-        #jerg-hud-bar {
-            position: fixed; top: 0; left: 0; width: 100%; height: 55px;
-            background: #0f172a; z-index: 100; display: flex; 
-            align-items: center; justify-content: space-between;
-            padding: 0 20px; box-sizing: border-box; 
-            border-bottom: 2px solid #00ffcc;
-        }
-        .hud-title {
-            color: #00ffcc; font-size: 1.4rem; font-weight: bold; letter-spacing: 2px; margin: 0;
-            font-family: sans-serif;
-        }
-        .hud-btn-group { display: flex; gap: 15px; }
-        .hud-btn {
-            background: #1e293b; color: #00ffcc; border: 1px solid #00ffcc;
-            padding: 6px 16px; font-size: 0.9rem; font-weight: bold; cursor: pointer;
-            border-radius: 4px; transition: all 0.2s ease; font-family: sans-serif;
-        }
-        .hud-btn:hover { background: #00ffcc; color: #0f172a; box-shadow: 0 0 10px rgba(0,255,204,0.4); }
-        .hud-btn.disabled {
-            border-color: #475569; color: #475569; background: #1e293b; cursor: not-allowed;
+            overflow: hidden; background-color: #000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none; -webkit-user-select: none;
         }
 
-        /* Live Stream Dashboard Layout */
-        #main-container {
-            display: flex; flex-direction: column; height: calc(100% - 55px);
-            margin-top: 55px; padding: 20px; box-sizing: border-box; gap: 15px;
+        #menu-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4)), 
+                        radial-gradient(circle at center bottom, #e07a5f 0%, #3d405b 60%, #0f172a 100%);
+            background-size: cover; z-index: 10;
         }
 
-        /* Network Telemetry Metrics */
-        #telemetry-ribbon {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px; background: #0f172a; border: 1px solid #1e293b; padding: 15px; border-radius: 6px;
+        .corner-info {
+            position: absolute; top: 12px; left: 15px;
+            color: #fcd34d; font-size: 13px; font-weight: bold;
+            line-height: 1.4; text-shadow: 1px 1px 2px #000;
         }
-        .metric-card { display: flex; flex-direction: column; gap: 5px; }
-        .metric-label { font-size: 0.8rem; color: #64748b; text-transform: uppercase; }
-        .metric-value { font-size: 1.2rem; font-weight: bold; color: #f8fafc; }
-        .status-online { color: #4ade80; }
-        .status-offline { color: #f87171; }
 
-        /* Raw Terminal Display */
-        #stream-terminal {
-            flex: 1; background: #090d16; border: 1px solid #1e293b;
-            border-radius: 6px; padding: 15px; overflow-y: auto;
-            display: flex; flex-direction: column; gap: 6px;
-            box-shadow: inset 0 4px 20px rgba(0,0,0,0.5);
+        .credits-indicator {
+            position: absolute; top: 15px; right: 20px;
+            background: rgba(0, 0, 0, 0.4); border: 2px solid #374151;
+            padding: 6px 16px; color: #d1d5db; font-size: 13px; font-weight: bold;
+            border-radius: 2px;
         }
-        .log-entry { font-size: 0.9rem; line-height: 1.4; word-break: break-all; }
-        .log-time { color: #64748b; margin-right: 8px; }
-        .log-inbound { color: #4ade80; }
-        .log-outbound { color: #a855f7; }
-        .log-system { color: #eab308; }
 
-        /* Control Input Area */
-        #input-container {
-            display: flex; gap: 10px; background: #0f172a; padding: 10px; border-radius: 6px; border: 1px solid #1e293b;
+        .logo-wrapper {
+            position: relative; margin-bottom: 40px; text-align: center;
         }
-        #packet-payload {
-            flex: 1; background: #020617; border: 1px solid #334155; padding: 12px;
-            color: #f8fafc; font-family: monospace; outline: none; border-radius: 4px;
+        .main-title {
+            color: #f3f4f6; font-size: 4rem; font-weight: 900; letter-spacing: 2px;
+            margin: 0; text-shadow: 4px 4px 0px #374151; font-style: italic;
         }
-        #packet-payload:focus { border-color: #00ffcc; }
-        #btn-send {
-            background: #00ffcc; color: #020617; border: none; padding: 0 25px;
-            font-weight: bold; cursor: pointer; border-radius: 4px; transition: background 0.2s;
+        .subtitle-edition {
+            color: #f3f4f6; font-size: 1.1rem; font-weight: bold; letter-spacing: 4px;
+            margin-top: -5px; text-shadow: 2px 2px 0px #000;
         }
-        #btn-send:hover { background: #22d3ee; }
 
-        /* Manager Modal */
-        #server-modal {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 360px; background: #0f172a; border: 2px solid #00ffcc; border-radius: 8px;
-            padding: 25px; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 1005;
-            display: none; text-align: center; font-family: sans-serif;
+        .splash-text {
+            position: absolute; right: -40px; bottom: -10px;
+            color: #facc15; font-size: 1.3rem; font-weight: bold;
+            transform: rotate(-15deg); text-shadow: 2px 2px 0px #000;
+            animation: splashPulse 0.5s infinite alternate ease-in-out;
         }
-        .srv-input {
-            width: 90%; background: #020617; border: 1px solid #334155; padding: 10px;
-            border-radius: 4px; color: #fff; text-align: center; font-size: 14px; margin-bottom: 12px; outline: none;
+        @keyframes splashPulse {
+            0% { transform: rotate(-15deg) scale(1.0); }
+            100% { transform: rotate(-15deg) scale(1.08); }
         }
+
+        .dev-info-label {
+            color: #e5e7eb; font-size: 15px; font-weight: bold;
+            text-align: center; margin-bottom: 20px; text-shadow: 1px 1px 2px #000;
+        }
+
+        .menu-button-stack {
+            display: flex; flex-direction: column; gap: 12px;
+            width: 100%; max-width: 400px; box-sizing: border-box;
+        }
+        .split-button-row { display: flex; gap: 12px; width: 100%; }
+
+        .mc-btn {
+            width: 100%; background: #4b5563; color: #e5e7eb;
+            border: 2px solid #1f2937; border-top-color: #9ca3af; border-left-color: #6b7280;
+            padding: 10px 0; font-size: 15px; font-weight: bold; cursor: pointer;
+            text-align: center; border-radius: 2px; box-shadow: inset 0 -4px 0 rgba(0,0,0,0.3);
+            text-shadow: 1px 1px 2px #000; outline: none;
+        }
+        .mc-btn:hover { background: #6b7280; border-color: #111827; border-top-color: #d1d5db; color: #fff; }
+        .mc-btn:active { padding-top: 12px; padding-bottom: 8px; box-shadow: inset 0 2px 0 rgba(0,0,0,0.5); }
+        .mc-btn.disabled { background: rgba(31, 41, 55, 0.6); color: #9ca3af; border-color: #111827; cursor: not-allowed; box-shadow: none; }
+
+        .bottom-left-info { position: absolute; bottom: 12px; left: 15px; color: #fff; font-size: 13px; font-weight: bold; line-height: 1.4; text-shadow: 1px 1px 2px #000; }
+        .bottom-right-info { position: absolute; bottom: 12px; right: 15px; color: #fff; font-size: 13px; font-weight: bold; text-shadow: 1px 1px 2px #000; }
+
+        #render-canvas { display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
+        #chat-panel { position: fixed; bottom: 20px; left: 20px; width: 380px; height: 260px; z-index: 50; display: none; flex-direction: column; pointer-events: none; }
+        #chat-logs { flex: 1; background: rgba(0, 0, 0, 0.45); border-radius: 4px; padding: 10px; overflow-y: auto; color: #fff; font-size: 14px; text-shadow: 1px 1px 2px #000; margin-bottom: 8px; display: flex; flex-direction: column; gap: 4px; }
+        #chat-input { width: 100%; background: rgba(10, 15, 20, 0.85); border: 1px solid #00ffcc; padding: 10px; border-radius: 4px; color: #fff; outline: none; pointer-events: auto; font-size: 14px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
-    <div id="jerg-hud-bar">
-        <h1 class="hud-title">JERGCRAFT NET-STREAM</h1>
-        <div class="hud-btn-group">
-            <button class="hud-btn" id="btn-open-jergservers">JERGSERVERS</button>
-            <button class="hud-btn disabled" title="Realms interface pipeline active soon">REALMS (SOON)</button>
+    <div id="menu-container">
+        <div class="corner-info">Based Off EaglercraftX<br>By Lax1dude</div>
+        <div class="credits-indicator">vool23</div>
+
+        <div class="logo-wrapper">
+            <h1 class="main-title">JERGCRAFT</h1>
+            <div class="subtitle-edition">VOXEL EDITION</div>
+            <div class="splash-text">Got your nose!</div>
         </div>
+
+        <div class="dev-info-label">EaglercraftZ u4 Reference Style<br>Made by Jergcraft-Devs</div>
+
+        <div class="menu-button-stack">
+            <button class="mc-btn" id="btn-singleplayer">Singleplayer</button>
+            <button class="mc-btn" id="btn-multiplayer">Multiplayer</button>
+            <button class="mc-btn disabled">EaglercraftZ Realms (SOON)</button>
+            <div class="split-button-row">
+                <button class="mc-btn">Options...</button>
+                <button class="mc-btn">Edit Profile</button>
+            </div>
+        </div>
+
+        <div class="bottom-left-info">Minecraft 1.20.4<br>EaglercraftZ 1.20-u4 Release [JS]</div>
+        <div class="bottom-right-info">Resources Copyright Mojang AB</div>
     </div>
 
-    <div id="main-container">
-        
-        <div id="telemetry-ribbon">
-            <div class="metric-card">
-                <span class="metric-label">Target Node</span>
-                <span class="metric-value" id="val-node">Connecting...</span>
-            </div>
-            <div class="metric-card">
-                <span class="metric-label">Socket Status</span>
-                <span class="metric-value status-offline" id="val-status">CLOSED</span>
-            </div>
-            <div class="metric-card">
-                <span class="metric-label">Packets Recv</span>
-                <span class="metric-value" id="val-rx">0</span>
-            </div>
-            <div class="metric-card">
-                <span class="metric-label">Packets Sent</span>
-                <span class="metric-value" id="val-tx">0</span>
-            </div>
-        </div>
+    <canvas id="render-canvas"></canvas>
 
-        <div id="stream-terminal"></div>
-
-        <div id="input-container">
-            <input type="text" id="packet-payload" placeholder='Type custom payload data string or raw text to transmit... (e.g. {"type":"ping"})'>
-            <button id="btn-send">SEND PACKET</button>
-        </div>
+    <div id="chat-panel">
+        <div id="chat-logs"></div>
+        <input type="text" id="chat-input" placeholder="Press Enter to write chat message...">
     </div>
+
+    <script>
+        const menu = document.getElementById('menu-container');
+        const canvas = document.getElementById('render-canvas');
+        const chat = document.getElementById('chat-panel');
+
+        function loadScript(src, callback) {
+            const s = document.createElement('script');
+            s.src = src;
+            s.onload = callback;
+            document.body.appendChild(s);
+        }
+
+        // Singleplayer Option: Loads the standalone Map array module
+        document.getElementById('btn-singleplayer').onclick = () => {
+            menu.style.display = 'none';
+            canvas.style.display = 'block';
+            chat.style.display = 'flex';
+            loadScript('Map/forest.js', () => {
+                if (window.initSingleplayerEngine) window.initSingleplayerEngine();
+            });
+        };
+
+        // Multiplayer Option: Loads the WebSocket Server communication module
+        document.getElementById('btn-multiplayer').onclick = () => {
+            menu.style.display = 'none';
+            canvas.style.display = 'block';
+            chat.style.display = 'flex';
+            loadScript('Javascript/jergcraft.js');
+        };
+    </script>
+</body>
+</html>
