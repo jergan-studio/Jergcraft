@@ -3,329 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Jergcraft 3D OpenVoxel Hub</title>
-    
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="mobile-web-app-capable" content="yes">
-
+    <title>Jergcraft Live WebSocket Terminal</title>
     <style>
         html, body {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden; background-color: #05080c;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            user-select: none; -webkit-user-select: none;
+            overflow: hidden; background-color: #020617;
+            font-family: 'Courier New', Courier, monospace;
+            color: #38bdf8; user-select: none;
         }
         
-        /* Persistent Top Navigation Bar HUD */
+        /* Top Navigation HUD */
         #jerg-hud-bar {
-            position: fixed; top: 0; left: 0; width: 100%; height: 50px;
-            background: linear-gradient(to bottom, rgba(5, 8, 12, 0.95) 0%, rgba(5, 8, 12, 0.6) 100%);
-            z-index: 100; display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; box-sizing: border-box; border-bottom: 1px solid rgba(0, 255, 204, 0.15);
+            position: fixed; top: 0; left: 0; width: 100%; height: 55px;
+            background: #0f172a; z-index: 100; display: flex; 
+            align-items: center; justify-content: space-between;
+            padding: 0 20px; box-sizing: border-box; 
+            border-bottom: 2px solid #00ffcc;
         }
         .hud-title {
-            color: #00ffcc; font-size: 1.5rem; font-weight: 800; letter-spacing: 2px; margin: 0;
+            color: #00ffcc; font-size: 1.4rem; font-weight: bold; letter-spacing: 2px; margin: 0;
+            font-family: sans-serif;
         }
         .hud-btn-group { display: flex; gap: 15px; }
         .hud-btn {
-            background: rgba(17, 17, 17, 0.8); color: #00ffcc; border: 1px solid #00ffcc;
+            background: #1e293b; color: #00ffcc; border: 1px solid #00ffcc;
             padding: 6px 16px; font-size: 0.9rem; font-weight: bold; cursor: pointer;
-            border-radius: 4px; transition: all 0.2s ease;
+            border-radius: 4px; transition: all 0.2s ease; font-family: sans-serif;
         }
-        .hud-btn:hover { background: #00ffcc; color: #111; box-shadow: 0 0 10px rgba(0,255,204,0.4); }
+        .hud-btn:hover { background: #00ffcc; color: #0f172a; box-shadow: 0 0 10px rgba(0,255,204,0.4); }
         .hud-btn.disabled {
-            border-color: #4b5563; color: #4b5563; background: rgba(31, 41, 55, 0.5); cursor: not-allowed;
-        }
-        .hud-btn.disabled:hover { box-shadow: none; background: rgba(31, 41, 55, 0.5); color: #4b5563; }
-
-        /* 3D Core Viewport Canvas Engine */
-        #render-canvas {
-            display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1;
+            border-color: #475569; color: #475569; background: #1e293b; cursor: not-allowed;
         }
 
-        /* Native HUD Player Chat Interface */
-        #chat-panel {
-            position: fixed; bottom: 20px; left: 20px; width: 380px; height: 260px; z-index: 50;
-            display: flex; flex-direction: column; pointer-events: none;
-        }
-        #chat-logs {
-            flex: 1; background: rgba(0, 0, 0, 0.45); border-radius: 4px; padding: 10px;
-            overflow-y: auto; color: #fff; font-size: 14px; text-shadow: 1px 1px 2px #000;
-            margin-bottom: 8px; display: flex; flex-direction: column; gap: 4px;
-        }
-        #chat-input {
-            width: 100%; background: rgba(10, 15, 20, 0.85); border: 1px solid #00ffcc;
-            padding: 10px; border-radius: 4px; color: #fff; outline: none;
-            pointer-events: auto; font-size: 14px; box-sizing: border-box;
+        /* Live Stream Dashboard Layout */
+        #main-container {
+            display: flex; flex-direction: column; height: calc(100% - 55px);
+            margin-top: 55px; padding: 20px; box-sizing: border-box; gap: 15px;
         }
 
-        /* Server Management Modal overlay layout */
+        /* Network Telemetry Metrics */
+        #telemetry-ribbon {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px; background: #0f172a; border: 1px solid #1e293b; padding: 15px; border-radius: 6px;
+        }
+        .metric-card { display: flex; flex-direction: column; gap: 5px; }
+        .metric-label { font-size: 0.8rem; color: #64748b; text-transform: uppercase; }
+        .metric-value { font-size: 1.2rem; font-weight: bold; color: #f8fafc; }
+        .status-online { color: #4ade80; }
+        .status-offline { color: #f87171; }
+
+        /* Raw Terminal Display */
+        #stream-terminal {
+            flex: 1; background: #090d16; border: 1px solid #1e293b;
+            border-radius: 6px; padding: 15px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 6px;
+            box-shadow: inset 0 4px 20px rgba(0,0,0,0.5);
+        }
+        .log-entry { font-size: 0.9rem; line-height: 1.4; word-break: break-all; }
+        .log-time { color: #64748b; margin-right: 8px; }
+        .log-inbound { color: #4ade80; }
+        .log-outbound { color: #a855f7; }
+        .log-system { color: #eab308; }
+
+        /* Control Input Area */
+        #input-container {
+            display: flex; gap: 10px; background: #0f172a; padding: 10px; border-radius: 6px; border: 1px solid #1e293b;
+        }
+        #packet-payload {
+            flex: 1; background: #020617; border: 1px solid #334155; padding: 12px;
+            color: #f8fafc; font-family: monospace; outline: none; border-radius: 4px;
+        }
+        #packet-payload:focus { border-color: #00ffcc; }
+        #btn-send {
+            background: #00ffcc; color: #020617; border: none; padding: 0 25px;
+            font-weight: bold; cursor: pointer; border-radius: 4px; transition: background 0.2s;
+        }
+        #btn-send:hover { background: #22d3ee; }
+
+        /* Manager Modal */
         #server-modal {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 360px; background: #0c121a; border: 2px solid #00ffcc; border-radius: 8px;
-            padding: 25px; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 1005;
-            display: none; text-align: center;
+            width: 360px; background: #0f172a; border: 2px solid #00ffcc; border-radius: 8px;
+            padding: 25px; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 1005;
+            display: none; text-align: center; font-family: sans-serif;
         }
         .srv-input {
-            width: 90%; background: #05080c; border: 1px solid #223446; padding: 10px;
-            border-radius: 4px; color: #fff; text-align: center; font-size: 14px;
-            margin-bottom: 12px; outline: none;
+            width: 90%; background: #020617; border: 1px solid #334155; padding: 10px;
+            border-radius: 4px; color: #fff; text-align: center; font-size: 14px; margin-bottom: 12px; outline: none;
         }
-        .srv-input:focus { border-color: #00ffcc; }
-        #jerg-server-list { max-height: 150px; overflow-y: auto; margin: 15px 0; padding: 5px; background: #05080c; border-radius: 6px; border: 1px solid #223446; text-align: left; }
-        .server-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid #111e2b; }
-        .server-item:last-child { border-bottom: none; }
-        .server-info { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 10px; }
-        .server-name-display { color: #00ffcc; font-weight: bold; font-size: 14px; display: block; }
-        .server-url-display { color: #8aa1b7; font-size: 11px; display: block; }
-        .server-actions { display: flex; gap: 5px; }
-        .srv-btn { padding: 5px 10px; font-size: 11px; font-weight: bold; border: none; border-radius: 3px; cursor: pointer; }
-        .srv-connect { background: #00ffcc; color: #0c121a; }
-        .srv-delete { background: #ff4444; color: #fff; }
-        .modal-buttons { display: flex; gap: 10px; margin-top: 5px; }
-        .modal-btn { flex: 1; padding: 10px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; font-size: 13px; }
-        .btn-add { background: #00ffcc; color: #0c121a; }
-        .btn-close { background: #223446; color: #fff; }
     </style>
 </head>
 <body>
 
     <div id="jerg-hud-bar">
-        <h1 class="hud-title">JERGCRAFT</h1>
+        <h1 class="hud-title">JERGCRAFT NET-STREAM</h1>
         <div class="hud-btn-group">
             <button class="hud-btn" id="btn-open-jergservers">JERGSERVERS</button>
-            <button class="hud-btn disabled" title="Realms configuration pipeline arriving soon">REALMS (SOON)</button>
+            <button class="hud-btn disabled" title="Realms interface pipeline active soon">REALMS (SOON)</button>
         </div>
     </div>
 
-    <canvas id="render-canvas"></canvas>
+    <div id="main-container">
+        
+        <div id="telemetry-ribbon">
+            <div class="metric-card">
+                <span class="metric-label">Target Node</span>
+                <span class="metric-value" id="val-node">Connecting...</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">Socket Status</span>
+                <span class="metric-value status-offline" id="val-status">CLOSED</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">Packets Recv</span>
+                <span class="metric-value" id="val-rx">0</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">Packets Sent</span>
+                <span class="metric-value" id="val-tx">0</span>
+            </div>
+        </div>
 
-    <div id="chat-panel">
-        <div id="chat-logs"></div>
-        <input type="text" id="chat-input" placeholder="Press Enter to write chat message...">
-    </div>
+        <div id="stream-terminal"></div>
 
-    <div id="server-modal">
-        <h3 style="color: #00ffcc; margin: 0 0 5px 0; letter-spacing: 1px;">JERGSERVER MANAGER</h3>
-        <div id="jerg-server-list"></div>
-        <hr style="border: 0; border-top: 1px solid #223446; margin: 15px 0;">
-        <p style="color: #8aa1b7; font-size: 12px; margin: 0 0 10px 0;">Add alternate backend domain socket link:</p>
-        <input type="text" id="jerg-input-name" class="srv-input" placeholder="Server Name">
-        <input type="text" id="jerg-input-url" class="srv-input" placeholder="https://your-server.onrender.com">
-        <div class="modal-buttons">
-            <button class="modal-btn btn-add" id="btn-dashboard-submit">ADD SERVER</button>
-            <button class="modal-btn btn-close" id="btn-dashboard-close">CLOSE</button>
+        <div id="input-container">
+            <input type="text" id="packet-payload" placeholder='Type custom payload data string or raw text to transmit... (e.g. {"type":"ping"})'>
+            <button id="btn-send">SEND PACKET</button>
         </div>
     </div>
-
-    <script type="text/javascript">
-        (function() {
-            'use strict';
-
-            let ws = null;
-            const canvas = document.getElementById('render-canvas');
-            const chatLogs = document.getElementById('chat-logs');
-            const chatInput = document.getElementById('chat-input');
-            const serverListContainer = document.getElementById('jerg-server-list');
-            const modal = document.getElementById('server-modal');
-
-            // Default auto-running world map matrix structure
-            let worldBlocks = [
-                [-2, 0, 0, 1], [-1, 0, 0, 1], [0, 0, 0, 1], [1, 0, 0, 1], [2, 0, 0, 1],
-                [-2, 0, 1, 1], [-1, 0, 1, 1], [0, 0, 1, 1], [1, 0, 1, 1], [2, 0, 1, 1],
-                [-2, 0, 2, 1], [-1, 0, 2, 1], [0, 0, 2, 1], [1, 0, 2, 1], [2, 0, 2, 1],
-                [0, 1, 1, 3], [0, 2, 1, 3], [0, 3, 1, 4], [-1, 3, 1, 4], [1, 3, 1, 4]
-            ];
-
-            function getServerProfiles() {
-                try { let e = localStorage.getItem('jergvoxel_servers'); return e ? JSON.parse(e) : []; } catch (e) { return []; }
-            }
-            function storeServerProfile(name, address) {
-                try {
-                    let parsed = getServerProfiles();
-                    parsed = parsed.filter(s => s.addr !== address);
-                    parsed.unshift({ name: name, addr: address });
-                    localStorage.setItem('jergvoxel_servers', JSON.stringify(parsed));
-                    return true;
-                } catch (e) { return false; }
-            }
-            function deleteServerProfile(address) {
-                try {
-                    let parsed = getServerProfiles();
-                    parsed = parsed.filter(s => s.addr !== address);
-                    localStorage.setItem('jergvoxel_servers', JSON.stringify(parsed));
-                    renderServerMenu(); 
-                } catch(e) {}
-            }
-
-            function renderServerMenu() {
-                if (!serverListContainer) return;
-                serverListContainer.innerHTML = "";
-                const servers = getServerProfiles();
-
-                if (servers.length === 0) {
-                    serverListContainer.innerHTML = `<div style="color: #555; font-size: 13px; text-align: center; padding: 20px;">No external routes added.</div>`;
-                    return;
-                }
-
-                servers.forEach(srv => {
-                    const item = document.createElement('div');
-                    item.className = 'server-item';
-                    item.innerHTML = `
-                        <div class="server-info">
-                            <span class="server-name-display">${srv.name}</span>
-                            <span class="server-url-display">${srv.addr}</span>
-                        </div>
-                        <div class="server-actions">
-                            <button class="srv-btn srv-connect" data-addr="${srv.addr}">JOIN</button>
-                            <button class="srv-btn srv-delete" data-addr="${srv.addr}">X</button>
-                        </div>
-                    `;
-                    item.querySelector('.srv-connect').onclick = function() {
-                        modal.style.display = 'none';
-                        establishServerSession(this.getAttribute('data-addr'));
-                    };
-                    item.querySelector('.srv-delete').onclick = function() {
-                        deleteServerProfile(this.getAttribute('data-addr'));
-                    };
-                    serverListContainer.appendChild(item);
-                });
-            }
-
-            // 3D Isometric Realtime Render Frame Loop
-            function start3DRenderEngineLoop() {
-                const ctx = canvas.getContext('2d');
-                if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
-                    canvas.width = window.innerWidth;
-                    canvas.height = window.innerHeight;
-                }
-
-                ctx.fillStyle = "#1e293b"; 
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                const centerX = canvas.width / 2;
-                const centerY = canvas.height / 2 + 30; // Shift down slightly to compensate for HUD bar
-
-                worldBlocks.forEach(block => {
-                    const [x, y, z, id] = block;
-                    const scale = 220 / (z + 8); 
-                    const isoX = centerX + (x * 45 * scale) - (y * 8 * scale);
-                    const isoY = centerY + (y * -35 * scale) + (z * 12 * scale);
-
-                    if (isoX < -50 || isoX > canvas.width + 50 || isoY < -50 || isoY > canvas.height + 50) return;
-
-                    if (id === 1) ctx.fillStyle = "#10b981";       
-                    else if (id === 2) ctx.fillStyle = "#78350f";  
-                    else if (id === 3) ctx.fillStyle = "#451a03";  
-                    else if (id === 4) ctx.fillStyle = "#065f46";  
-                    else ctx.fillStyle = "#d1d5db";
-
-                    ctx.strokeStyle = "rgba(0,0,0,0.25)";
-                    ctx.lineWidth = 1;
-                    ctx.fillRect(isoX, isoY, 32 * scale, 32 * scale);
-                    ctx.strokeRect(isoX, isoY, 32 * scale, 32 * scale);
-                });
-
-                requestAnimationFrame(start3DRenderEngineLoop);
-            }
-
-            // Secure network channel handling
-            function establishServerSession(targetUrl) {
-                if(ws) { try { ws.close(); } catch(e){} }
-                
-                let cleanUrl = targetUrl.trim();
-                cleanUrl = cleanUrl.replace(/^(https?:\/\/|wss?:\/\/)/i, '');
-                const finalWssUrl = "wss://" + cleanUrl;
-
-                logSystemNotice(`Shifting route stream: ${finalWssUrl}`);
-
-                try {
-                    ws = new WebSocket(finalWssUrl);
-
-                    ws.onopen = () => {
-                        logSystemNotice("Handshake verified. Node uplink established.");
-                        ws.send(JSON.stringify({ type: "CHAT", user: "Player", text: "Joined sandbox arena channel." }));
-                    };
-
-                    ws.onmessage = (event) => {
-                        try {
-                            const packageData = JSON.parse(event.data);
-                            if (packageData.type === "WORLD_DATA" && packageData.map && packageData.map.blocks) {
-                                worldBlocks = packageData.map.blocks;
-                                logSystemNotice(`Synchronized Map Matrix: ${packageData.map.name}`);
-                            }
-                            if (packageData.type === "CHAT") {
-                                appendChatMessage(packageData.user, packageData.text);
-                            }
-                        } catch(err) {}
-                    };
-
-                    ws.onclose = () => { logSystemNotice("Connection dropped from target websocket route."); };
-                } catch(e) {
-                    logSystemNotice("Websocket instantiation thread exception recorded.");
-                }
-            }
-
-            function appendChatMessage(user, msg) {
-                const row = document.createElement('div');
-                row.innerHTML = `<b style="color: #00ffcc;">${user}:</b> <span style="color:#ffffff;">${msg}</span>`;
-                chatLogs.appendChild(row);
-                chatLogs.scrollTop = chatLogs.scrollHeight;
-            }
-
-            function logSystemNotice(msg) { appendChatMessage("SYSTEM", msg); }
-
-            // Global Chat Trigger Interceptors
-            window.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    if (document.activeElement === chatInput) {
-                        const val = chatInput.value.trim();
-                        if (val && ws && ws.readyState === WebSocket.OPEN) {
-                            ws.send(JSON.stringify({ type: "CHAT", user: "Player", text: val }));
-                            appendChatMessage("You", val);
-                        }
-                        chatInput.value = "";
-                        chatInput.blur();
-                    } else {
-                        chatInput.focus();
-                    }
-                }
-            });
-
-            // UI Button Mapping and Auto-Boot Processing
-            window.addEventListener('DOMContentLoaded', () => {
-                const nameIn = document.getElementById('jerg-input-name');
-                const urlIn = document.getElementById('jerg-input-url');
-
-                // 1. Kickstart 3D rendering pipeline automatically
-                start3DRenderEngineLoop();
-
-                // 2. Direct automatic handshake target assignment
-                establishServerSession("JergXCraft.eagler.host");
-
-                document.getElementById('btn-open-jergservers').onclick = () => {
-                    if(nameIn) nameIn.value = "";
-                    if(urlIn) urlIn.value = "https://";
-                    renderServerMenu(); 
-                    modal.style.display = 'block';
-                };
-
-                document.getElementById('btn-dashboard-close').onclick = () => { modal.style.display = 'none'; };
-
-                document.getElementById('btn-dashboard-submit').onclick = () => {
-                    const name = nameIn.value.trim() || "Dynamic Server Node";
-                    let rawUrl = urlIn.value.trim();
-                    if (!rawUrl) { alert("Please input a network server domain address link."); return; }
-
-                    if (storeServerProfile(name, rawUrl)) {
-                        nameIn.value = "";
-                        urlIn.value = "https://";
-                        renderServerMenu();
-                    }
-                };
-            });
-        })();
-    </script>
-</body>
-</html>
