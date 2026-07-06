@@ -45,4 +45,151 @@
         .server-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid #111e2b; }
         .server-item:last-child { border-bottom: none; }
         .server-info { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 10px; }
-        .server-name-display { color: #00ffcc; font-weight:
+        .server-name-display { color: #00ffcc; font-weight: bold; font-size: 14px; display: block; }
+        .server-url-display { color: #8aa1b7; font-size: 11px; display: block; }
+        .server-actions { display: flex; gap: 5px; }
+        .srv-btn { padding: 5px 10px; font-size: 11px; font-weight: bold; border: none; border-radius: 3px; cursor: pointer; }
+        .srv-connect { background: #00ffcc; color: #0c121a; }
+        .srv-delete { background: #ff4444; color: #fff; }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 5px; }
+        .modal-btn { flex: 1; padding: 10px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; font-size: 13px; }
+        .btn-add { background: #00ffcc; color: #0c121a; }
+        .btn-close { background: #223446; color: #fff; }
+    </style>
+</head>
+<body>
+
+    <div id="menu-container">
+        <h1>JERGCRAFT</h1>
+        <div class="button-group">
+            <button class="menu-btn" id="btn-open-jergservers">OPEN YOUR JERGSERVERS</button>
+        </div>
+    </div>
+
+    <canvas id="render-canvas"></canvas>
+
+    <div id="chat-panel">
+        <div id="chat-logs"></div>
+        <input type="text" id="chat-input" placeholder="Press Enter to write chat message...">
+    </div>
+
+    <div id="server-modal">
+        <h3 style="color: #00ffcc; margin: 0 0 5px 0; letter-spacing: 1px;">JERGSERVER MANAGER</h3>
+        <div id="jerg-server-list"></div>
+        <hr style="border: 0; border-top: 1px solid #223446; margin: 15px 0;">
+        <p style="color: #8aa1b7; font-size: 12px; margin: 0 0 10px 0;">Add a clean web-socket backend domain link:</p>
+        <input type="text" id="jerg-input-name" class="srv-input" placeholder="Server Name">
+        <input type="text" id="jerg-input-url" class="srv-input" placeholder="https://your-server.onrender.com">
+        <div class="modal-buttons">
+            <button class="modal-btn btn-add" id="btn-dashboard-submit">ADD JERGSERVER</button>
+            <button class="modal-btn btn-close" id="btn-dashboard-close">CLOSE</button>
+        </div>
+    </div>
+
+    <script>
+        // Setup internal map variables if Map/forest.js is missing
+        window.ForestMap = window.ForestMap || {
+            name: "Internal Safety Backup Map",
+            blocks: [
+                [-2, 0, 0, 1], [-1, 0, 0, 1], [0, 0, 0, 1], [1, 0, 0, 1], [2, 0, 0, 1],
+                [-2, 0, 1, 1], [-1, 0, 1, 1], [0, 0, 1, 1], [1, 0, 1, 1], [2, 0, 1, 1],
+                [-2, 0, 2, 1], [-1, 0, 2, 1], [0, 0, 2, 1], [1, 0, 2, 1], [2, 0, 2, 1],
+                [0, 1, 1, 3], [0, 2, 1, 3], [0, 3, 1, 4], [-1, 3, 1, 4], [1, 3, 1, 4]
+            ]
+        };
+    </script>
+
+    <script src="Map/forest.js" onerror="console.warn('Map/forest.js not found, running internal map arrays.')"></script>
+    <script src="Javascript/jergcraft.js" onerror="loadFallbackEngine()"></script>
+
+    <script>
+        // This function triggers only if your Javascript/jergcraft.js file fails to read
+        function loadFallbackEngine() {
+            console.warn("Javascript/jergcraft.js was missing. Activating embedded local engine framework.");
+            
+            const script = document.createElement('script');
+            script.text = `
+                (function() {
+                    'use strict';
+                    let ws = null;
+                    const canvas = document.getElementById('render-canvas');
+                    const chatPanel = document.getElementById('chat-panel');
+                    const chatLogs = document.getElementById('chat-logs');
+                    const chatInput = document.getElementById('chat-input');
+                    const serverListContainer = document.getElementById('jerg-server-list');
+                    const modal = document.getElementById('server-modal');
+                    let worldBlocks = window.ForestMap.blocks;
+
+                    function getServerProfiles() {
+                        try { let e = localStorage.getItem('jergvoxel_servers'); return e ? JSON.parse(e) : []; } catch (e) { return []; }
+                    }
+                    function storeServerProfile(n, a) {
+                        try { let p = getServerProfiles(); p = p.filter(s => s.addr !== a); p.unshift({ name: n, addr: a }); localStorage.setItem('jergvoxel_servers', JSON.stringify(p)); return true; } catch (e) { return false; }
+                    }
+                    function deleteServerProfile(a) {
+                        try { let p = getServerProfiles(); p = p.filter(s => s.addr !== a); localStorage.setItem('jergvoxel_servers', JSON.stringify(p)); renderServerMenu(); } catch(e) {}
+                    }
+                    function renderServerMenu() {
+                        if (!serverListContainer) return; serverListContainer.innerHTML = ""; const s = getServerProfiles();
+                        if (s.length === 0) { serverListContainer.innerHTML = '<div style="color: #555; font-size: 13px; text-align: center; padding: 20px;">No custom nodes registered yet.</div>'; return; }
+                        s.forEach(srv => {
+                            const item = document.createElement('div'); item.className = 'server-item';
+                            item.innerHTML = \`<div class="server-info"><span class="server-name-display">\${srv.name}</span><span class="server-url-display">\${srv.addr}</span></div><div class="server-actions"><button class="srv-btn srv-connect" data-addr="\${srv.addr}">JOIN</button><button class="srv-btn srv-delete" data-addr="\${srv.addr}">X</button></div>\`;
+                            item.querySelector('.srv-connect').onclick = function() { modal.style.display = 'none'; establishServerSession(this.getAttribute('data-addr')); };
+                            item.querySelector('.srv-delete').onclick = function() { deleteServerProfile(this.getAttribute('data-addr')); };
+                            serverListContainer.appendChild(item);
+                        });
+                    }
+                    function start3DRenderEngineLoop() {
+                        if (canvas.style.display !== 'block') return; const ctx = canvas.getContext('2d');
+                        if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+                        ctx.fillStyle = "#1e293b"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        const cX = canvas.width / 2, cY = canvas.height / 2;
+                        worldBlocks.forEach(b => {
+                            const [x, y, z, id] = b; const scale = 220 / (z + 8); const isoX = cX + (x * 45 * scale) - (y * 8 * scale); const isoY = cY + (y * -35 * scale) + (z * 12 * scale);
+                            if (isoX < -50 || isoX > canvas.width + 50 || isoY < -50 || isoY > canvas.height + 50) return;
+                            if (id === 1) ctx.fillStyle = "#10b981"; else if (id === 2) ctx.fillStyle = "#78350f"; else if (id === 3) ctx.fillStyle = "#451a03"; else if (id === 4) ctx.fillStyle = "#065f46"; else ctx.fillStyle = "#d1d5db";
+                            ctx.strokeStyle = "rgba(0,0,0,0.25)"; ctx.lineWidth = 1; ctx.fillRect(isoX, isoY, 32 * scale, 32 * scale); ctx.strokeRect(isoX, isoY, 32 * scale, 32 * scale);
+                        });
+                        requestAnimationFrame(start3DRenderEngineLoop);
+                    }
+                    function establishServerSession(url) {
+                        document.getElementById('menu-container').style.display = 'none'; canvas.style.display = 'block'; chatPanel.style.display = 'flex';
+                        let clean = url.trim().replace(/^(https?:\\/\\/|wss?:\\/\\/)/i, ''); const finalWss = "wss://" + clean;
+                        start3DRenderEngineLoop(); appendChatMessage("SYSTEM", "Connecting to node: " + finalWss);
+                        try {
+                            ws = new WebSocket(finalWss);
+                            ws.onopen = () => { appendChatMessage("SYSTEM", "Connected! 3D Environment active."); ws.send(JSON.stringify({ type: "CHAT", user: "Player", text: "connected." })); };
+                            ws.onmessage = (e) => {
+                                try { const d = JSON.parse(e.data); if (d.type === "WORLD_DATA" && d.map) { worldBlocks = d.map.blocks; appendChatMessage("SYSTEM", "Loaded map: " + d.map.name); } if (d.type === "CHAT") { appendChatMessage(d.user, d.text); } } catch(err) {}
+                            };
+                            ws.onclose = () => appendChatMessage("SYSTEM", "Disconnected from server host link.");
+                        } catch(e) { appendChatMessage("SYSTEM", "Socket connection interface error."); }
+                    }
+                    function appendChatMessage(u, m) { const r = document.createElement('div'); r.innerHTML = \`<b style="color: #00ffcc;">\${u}:</b> <span style="color:#fff;">\${m}</span>\`; chatLogs.appendChild(r); chatLogs.scrollTop = chatLogs.scrollHeight; }
+
+                    window.addEventListener('keydown', (e) => {
+                        if (chatPanel.style.display !== 'flex') return;
+                        if (e.key === 'Enter') {
+                            if (document.activeElement === chatInput) {
+                                const v = chatInput.value.trim(); if (v && ws && ws.readyState === 1) { ws.send(JSON.stringify({ type: "CHAT", user: "Player", text: v })); appendChatMessage("You", v); }
+                                chatInput.value = ""; chatInput.blur();
+                            } else { chatInput.focus(); }
+                        }
+                    });
+                    window.addEventListener('DOMContentLoaded', () => {
+                        const nIn = document.getElementById('jerg-input-name'), uIn = document.getElementById('jerg-input-url');
+                        document.getElementById('btn-open-jergservers').onclick = () => { if(nIn) nIn.value = ""; if(uIn) uIn.value = "https://"; renderServerMenu(); modal.style.display = 'block'; };
+                        document.getElementById('btn-dashboard-close').onclick = () => { modal.style.display = 'none'; };
+                        document.getElementById('btn-dashboard-submit').onclick = () => {
+                            const n = nIn.value.trim() || "Voxel Node"; let u = uIn.value.trim(); if(!u) return;
+                            if (storeServerProfile(n, u)) { nIn.value = ""; uIn.value = "https://"; renderServerMenu(); }
+                        };
+                    });
+                })();
+            `;
+            document.body.appendChild(script);
+        }
+    </script>
+</body>
+</html>
