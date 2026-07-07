@@ -161,4 +161,21 @@ window.initSingleplayerEngine = function() {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         // Merge standard map blocks and the dynamic player into a unified stack array
-        let dynamicMapStack =
+        let dynamicMapStack = [...window.ForestMap.blocks, [player.x, player.y, player.z, player.id]];
+
+        // Sort via depth order (Painter's algorithm sorting formula)
+        dynamicMapStack.sort((a, b) => {
+            if (Math.abs(a[1] - b[1]) > 0.1) return a[1] - b[1]; // Sort altitude first
+            return (a[0] + a[2]) - (b[0] + b[2]); // Sort depth space
+        });
+
+        // Loop through sorted index elements and project layout graphics
+        dynamicMapStack.forEach(cube => {
+            drawIsometricCube(ctx, cube[0], cube[1], cube[2], player.size, cube[3]);
+        });
+
+        requestAnimationFrame(renderLoop);
+    }
+
+    renderLoop();
+};
