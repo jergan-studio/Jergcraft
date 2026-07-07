@@ -4,10 +4,10 @@
  */
 window.ForestMap = {
     name: "3D First-Person Forest World",
-    // Block coordinates array: [X, Y, Z, BlockTypeID]
+    // Block coordinates array layout: [X, Y, Z, BlockTypeID]
     // BlockType IDs: 1 = Grass, 3 = Wood Log, 4 = Leaves
     blocks: [
-        // Ground Layer (Flat Green Grass Field)
+        // Ground Layer (Flat Green Grass Field Layout Matrix)
         [-3, -1, -3, 1], [-2, -1, -3, 1], [-1, -1, -3, 1], [0, -1, -3, 1], [1, -1, -3, 1], [2, -1, -3, 1], [3, -1, -3, 1],
         [-3, -1, -2, 1], [-2, -1, -2, 1], [-1, -1, -2, 1], [0, -1, -2, 1], [1, -1, -2, 1], [2, -1, -2, 1], [3, -1, -2, 1],
         [-3, -1, -1, 1], [-2, -1, -1, 1], [-1, -1, -1, 1], [0, -1, -1, 1], [1, -1, -1, 1], [2, -1, -1, 1], [3, -1, -1, 1],
@@ -16,13 +16,13 @@ window.ForestMap = {
         [-3, -1,  2, 1], [-2, -1,  2, 1], [-1, -1,  2, 1], [0, -1,  2, 1], [1, -1,  2, 1], [2, -1,  2, 1], [3, -1,  2, 1],
         [-3, -1,  3, 1], [-2, -1,  3, 1], [-1, -1,  3, 1], [0, -1,  3, 1], [1, -1,  3, 1], [2, -1,  3, 1], [3, -1,  3, 1],
 
-        // Central Tree Structure (Trunk Columns)
-        [0, 0, 2, 3], 
-        [0, 1, 2, 3], 
+        // Central Voxel Tree (Trunk Columns)
+        [0, 0, 3, 3], 
+        [0, 1, 3, 3], 
         
-        // Tree Canopy (Leaves Umbrella Shell)
-        [0, 2, 2, 4], 
-        [-1, 2, 2, 4], [1, 2, 2, 4], [0, 2, 1, 4], [0, 2, 3, 4],
-        [0, 3, 2, 4]
+        // Tree Canopy Structure
+        [0, 2, 3, 4], 
+        [-1, 2, 3, 4], [1, 2, 3, 4], [0, 2, 2, 4], [0, 2, 4, 4],
+        [0, 3, 3, 4]
     ]
 };
