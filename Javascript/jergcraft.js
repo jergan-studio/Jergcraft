@@ -1,48 +1,158 @@
 /**
- * Javascript/jergcraft.js
- * Online Multiplayer WebSocket Controller
+ * Map/forest.js
+ * True First-Person 3D Voxel Engine Module
  */
-(function() {
-    'use strict';
-    let ws = null;
+window.ForestMap = {
+    name: "Local 3D First-Person Forest",
+    // Format: [X, Y, Z, BlockTypeID]
+    blocks: [
+        // Ground Plane (Floor blocks)
+        [-2, -1, -2, 1], [-1, -1, -2, 1], [0, -1, -2, 1], [1, -1, -2, 1], [2, -1, -2, 1],
+        [-2, -1, -1, 1], [-1, -1, -1, 1], [0, -1, -1, 1], [1, -1, -1, 1], [2, -1, -1, 1],
+        [-2, -1,  0, 1], [-1, -1,  0, 1], [0, -1,  0, 1], [1, -1,  0, 1], [2, -1,  0, 1],
+        [-2, -1,  1, 1], [-1, -1,  1, 1], [0, -1,  1, 1], [1, -1,  1, 1], [2, -1,  1, 1],
+        [-2, -1,  2, 1], [-1, -1,  2, 1], [0, -1,  2, 1], [1, -1,  2, 1], [2, -1,  2, 1],
+
+        // Tree Trunk (Wood Columns)
+        [1, 0, 1, 3], 
+        [1, 1, 1, 3], 
+        
+        // Tree Canopy (Leaves Layer)
+        [1, 2, 1, 4], [0, 2, 1, 4], [2, 2, 1, 4], [1, 2, 0, 4], [1, 2, 2, 4]
+    ]
+};
+
+window.initSingleplayerEngine = function() {
     const canvas = document.getElementById('render-canvas');
     const logs = document.getElementById('chat-logs');
-    let blocks = [];
-
-    function log(m) {
-        const r = document.createElement('div');
-        r.innerHTML = `<b style="color: #00ffcc;">MULTIPLAYER:</b> <span style="color:#fff;">${m}</span>`;
-        logs.appendChild(r);
+    
+    function log(msg) {
+        if (!logs) return;
+        const row = document.createElement('div');
+        row.innerHTML = `<b style="color: #facc15;">SYSTEM:</b> <span style="color:#fff;">${msg}</span>`;
+        logs.appendChild(row);
     }
 
-    function runNetEngine() {
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        ctx.fillStyle = "#0f172a"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    log("First-Person 3D Mode Active. Move mouse to look, WASD to walk.");
 
-        const cX = canvas.width / 2, cY = canvas.height / 2;
-        blocks.forEach(b => {
-            const [x, y, z, id] = b; const scale = 220 / (z + 8);
-            const isoX = cX + (x * 45 * scale) - (y * 8 * scale);
-            const isoY = cY + (y * -35 * scale) + (z * 12 * scale);
-            ctx.fillStyle = id === 1 ? "#10b981" : "#d1d5db";
-            ctx.fillRect(isoX, isoY, 32 * scale, 32 * scale);
-        });
-        requestAnimationFrame(runNetEngine);
+    // --- First-Person Player / Camera Variables ---
+    const player = {
+        x: 0.0,
+        y: 0.5, // Eye height sitting above the ground floor
+        z: 0.0,
+        yaw: 0.0,   // Horizontal look angle (turned by mouse X)
+        pitch: 0.0, // Vertical look angle (tilted by mouse Y)
+        speed: 0.05
+    };
+
+    // Tracking mouse inputs across the screen layout bounds
+    const mouse = { targetYaw: 0, targetPitch: 0 };
+    window.addEventListener('mousemove', (e) => {
+        // Convert screen pixel space to angular movement values (-1.5 to +1.5 radians)
+        const normX = (e.clientX / window.innerWidth) * 2 - 1;
+        const normY = (e.clientY / window.innerHeight) * 2 - 1;
+        
+        mouse.targetYaw = normX * 1.5;
+        mouse.targetPitch = -normY * 1.0; 
+    });
+
+    // Keyboard inputs tracker map matrix
+    const keys = {};
+    window.addEventListener('keydown', (e) => { keys[e.key.toLowerCase()] = true; });
+    window.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
+
+    function handleFirstPersonMovement() {
+        // Smoothly ease the angles toward the target mouse positions
+        player.yaw += (mouse.targetYaw - player.yaw) * 0.1;
+        player.pitch += (mouse.targetPitch - player.pitch) * 0.1;
+
+        let moveX = 0;
+        let moveZ = 0;
+
+        // Dynamic forward vector calculation based on look heading direction (Yaw)
+        const forwardX = Math.sin(player.yaw);
+        const forwardZ = Math.cos(player.yaw);
+
+        if (keys['w'] || keys['arrowup']) {
+            moveX += forwardX * player.speed;
+            moveZ += forwardZ * player.speed;
+        }
+        if (keys['s'] || keys['arrowdown']) {
+            moveX -= forwardX * player.speed;
+            moveZ -= forwardZ * player.speed;
+        }
+        if (keys['a'] || keys['arrowleft']) {
+            moveX -= forwardZ * player.speed; // Strafe Left
+            moveZ += forwardX * player.speed;
+        }
+        if (keys['d'] || keys['arrowright']) {
+            moveX += forwardZ * player.speed; // Strafe Right
+            moveZ -= forwardX * player.speed;
+        }
+
+        player.x += moveX;
+        player.z += moveZ;
+
+        // Keep player safe on the map boundary footprint limits
+        player.x = Math.max(-3, Math.min(3, player.x));
+        player.z = Math.max(-3, Math.min(3, player.z));
     }
 
-    log("Connecting to network: wss://JergXCraft.eagler.host");
-    runNetEngine();
+    // --- 3D Projection Engine Geometry Core Pipeline ---
+    function projectVoxelToFirstPerson(x, y, z, size) {
+        // Step 1: Translate world coordinates relative to the player's eye tracking point
+        let relX = (x - player.x) * size;
+        let relY = -(y - player.y) * size;
+        let relZ = (z - player.z) * size;
 
-    try {
-        ws = new WebSocket("wss://JergXCraft.eagler.host");
-        ws.onopen = () => log("Successfully connected to server cluster!");
-        ws.onmessage = (e) => {
-            try {
-                let d = JSON.parse(e.data);
-                if (d.type === "WORLD_DATA") blocks = d.map.blocks;
-            } catch(err) {}
+        // Step 2: Apply horizontal Yaw turning rotation calculations around Y axis
+        let cosY = Math.cos(-player.yaw), sinY = Math.sin(-player.yaw);
+        let rx1 = relX * cosY - relZ * sinY;
+        let rz1 = relX * sinY + relZ * cosY;
+
+        // Step 3: Apply vertical Pitch tilting rotation calculations around X axis
+        let cosP = Math.cos(-player.pitch), sinP = Math.sin(-player.pitch);
+        let ry2 = relY * cosP - rz1 * sinP;
+        let rz2 = relY * sinP + rz1 * cosP;
+
+        // If the object is behind the camera eye plane view, skip rendering it
+        if (rz2 <= 5) return null;
+
+        // Step 4: Map 3D coordinates onto 2D viewport space
+        const fovScale = 400; // Field of View projection distance constant factor
+        const screenX = (canvas.width / 2) + (rx1 * fovScale / rz2);
+        const screenY = (canvas.height / 2) + (ry2 * fovScale / rz2);
+        const projectedRadius = (size * 0.5) * fovScale / rz2;
+
+        return {
+            x: screenX,
+            y: screenY,
+            depth: rz2, // Save calculation depth distance for Painter's ordering sorting logic
+            r: projectedRadius
         };
-        ws.onclose = () => log("Disconnected from server host.");
-    } catch(e) { log("Uplink initialization failed."); }
-})();
+    }
+
+    function render3DBlockFace(ctx, proj, blockId) {
+        let topColor, sideColor;
+
+        if (blockId === 1) { // Grass
+            topColor = "#10b981"; sideColor = "#047857";
+        } else if (blockId === 3) { // Wood Log
+            topColor = "#b45309"; sideColor = "#451a03";
+        } else if (blockId === 4) { // Leaves
+            topColor = "#059669"; sideColor = "#044e3a";
+        } else { // Stone
+            topColor = "#9ca3af"; sideColor = "#4b5563";
+        }
+
+        const r = proj.r;
+
+        // Draw Front Side Projection bounding polygon shape
+        ctx.fillStyle = sideColor;
+        ctx.fillRect(proj.x - r, proj.y - r, r * 2, r * 2);
+        
+        // Draw Accent Cap Top Line layer block layout indicator mesh
+        ctx.fillStyle = topColor;
+        ctx.beginPath();
+        ctx.moveTo(proj.x - r, proj.y - r);
+        ctx.lineTo(proj.x
