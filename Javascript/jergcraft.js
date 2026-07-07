@@ -155,4 +155,55 @@ window.initSingleplayerEngine = function() {
         ctx.fillStyle = topColor;
         ctx.beginPath();
         ctx.moveTo(proj.x - r, proj.y - r);
-        ctx.lineTo(proj.x
+        ctx.lineTo(proj.x + r, proj.y - r);
+        ctx.lineTo(proj.x + r, proj.y - r + (r * 0.3));
+        ctx.lineTo(proj.x - r, proj.y - r + (r * 0.3));
+        ctx.closePath();
+        ctx.fill();
+
+        // Overlay clean structural wireframes
+        ctx.strokeStyle = "rgba(0,0,0,0.2)";
+        ctx.strokeRect(proj.x - r, proj.y - r, r * 2, r * 2);
+    }
+
+    function renderLoop() {
+        if (canvas.style.display !== 'block') return;
+        const ctx = canvas.getContext('2d');
+        
+        if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        // Process physics movement ticks
+        handleFirstPersonMovement();
+
+        // Sky background backdrop color fill
+        ctx.fillStyle = "#0f172a"; 
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Project and filter active block arrays map vectors list elements
+        let renderStack = [];
+        const blockSize = 50;
+
+        window.ForestMap.blocks.forEach(b => {
+            let projectedNode = projectVoxelToFirstPerson(b[0], b[1], b[2], blockSize);
+            if (projectedNode) {
+                projectedNode.id = b[3]; // Attach Block Type ID
+                renderStack.push(projectedNode);
+            }
+        });
+
+        // Painter's algorithm: Sort objects by depth from back-to-front
+        renderStack.sort((a, b) => b.depth - a.depth);
+
+        // Flush render stack elements cleanly onto view screen canvas matrix positions
+        renderStack.forEach(node => {
+            render3DBlockFace(ctx, node, node.id);
+        });
+
+        requestAnimationFrame(renderLoop);
+    }
+
+    renderLoop();
+};
