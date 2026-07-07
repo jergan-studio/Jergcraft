@@ -6,7 +6,7 @@
     <title>EaglercraftZ 1.20 - Main Menu</title>
     
     <style>
-        /* Global CSS Reset & Setup */
+        /* Global Reset & Base Layout Setup */
         html, body {
             margin: 0; padding: 0; width: 100%; height: 100%;
             overflow: hidden; background-color: #000;
@@ -14,7 +14,7 @@
             user-select: none; -webkit-user-select: none;
         }
 
-        /* Transparent overlays to show the 3D animated canvas panorama beneath */
+        /* Transparent user interface overlays sitting above the 3D graphics canvas */
         #menu-container, .screen-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -22,16 +22,15 @@
             z-index: 10;
         }
 
-        /* Screens Toggle Utility */
         .hidden { display: none !important; }
 
-        /* Corner Text UI Metadata */
+        /* Corner Metadata Panels */
         .corner-info { position: absolute; top: 12px; left: 15px; color: #facc15; font-size: 13px; font-weight: bold; line-height: 1.4; text-shadow: 1px 1px 2px #000; }
         .credits-indicator { position: absolute; top: 15px; right: 20px; background: rgba(0, 0, 0, 0.4); border: 2px solid #374151; padding: 6px 16px; color: #d1d5db; font-size: 13px; font-weight: bold; border-radius: 2px; }
         .bottom-left-info { position: absolute; bottom: 12px; left: 15px; color: #fff; font-size: 13px; font-weight: bold; line-height: 1.4; text-shadow: 1px 1px 2px #000; }
         .bottom-right-info { position: absolute; bottom: 12px; right: 15px; color: #fff; font-size: 13px; font-weight: bold; text-shadow: 1px 1px 2px #000; }
 
-        /* Minecraft Logo presentation components */
+        /* Game Title Styling Components */
         .logo-wrapper { position: relative; margin-bottom: 35px; text-align: center; }
         .main-title { color: #f3f4f6; font-size: 4rem; font-weight: 900; letter-spacing: 2px; margin: 0; text-shadow: 4px 4px 0px #374151; font-style: italic; }
         .subtitle-edition { color: #f3f4f6; font-size: 1.1rem; font-weight: bold; letter-spacing: 4px; margin-top: -5px; text-shadow: 2px 2px 0px #000; }
@@ -39,11 +38,11 @@
         @keyframes splashPulse { 0% { transform: rotate(-15deg) scale(1.0); } 100% { transform: rotate(-15deg) scale(1.08); } }
         .dev-info-label { color: #e5e7eb; font-size: 14px; font-weight: bold; text-align: center; margin-bottom: 20px; text-shadow: 1px 1px 2px #000; }
 
-        /* Button Stack Templates */
+        /* Navigation Button Stack Containers */
         .menu-button-stack { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 400px; box-sizing: border-box; }
         .split-button-row { display: flex; gap: 12px; width: 100%; }
 
-        /* Pixel-Style Menu Buttons */
+        /* Pixel Theme Textured Buttons */
         .mc-btn {
             width: 100%; background: #4b5563; color: #e5e7eb;
             border: 2px solid #1f2937; border-top-color: #9ca3af; border-left-color: #6b7280;
@@ -55,7 +54,7 @@
         .mc-btn:active { padding-top: 12px; padding-bottom: 8px; box-shadow: inset 0 2px 0 rgba(0,0,0,0.5); }
         .mc-btn.disabled { background: rgba(31, 41, 55, 0.6); color: #9ca3af; border-color: #111827; cursor: not-allowed; box-shadow: none; text-shadow: none; }
 
-        /* Worlds Selector UI */
+        /* Worlds List HUD Screen Layouts */
         .screen-title { color: #fff; font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; text-shadow: 2px 2px 0px #000; }
         .world-list-box {
             width: 100%; max-width: 440px; height: 280px; background: rgba(0,0,0,0.75);
@@ -73,15 +72,15 @@
         .w-name { color: #fff; font-weight: bold; font-size: 14px; }
         .w-date { color: #9ca3af; font-size: 11px; }
 
-        /* Modals */
+        /* Dialogue Modals */
         .input-dialog { background: #1e293b; border: 3px solid #4b5563; padding: 20px; border-radius: 4px; box-shadow: 0 10px 25px rgba(0,0,0,0.6); text-align: center; }
         .mc-input { background: #000; border: 2px solid #4b5563; color: #fff; padding: 10px; width: 260px; font-size: 14px; outline: none; margin-bottom: 15px; font-family: monospace; }
         .mc-input:focus { border-color: #facc15; }
 
-        /* Graphics Drawing Canvas Frame Element */
+        /* Primary Viewport Rendering Surface */
         #render-canvas { display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
         
-        /* Gameplay Text HUD */
+        /* Gameplay Context Text HUD */
         #chat-panel { position: fixed; bottom: 20px; left: 20px; width: 380px; height: 220px; z-index: 50; display: none; flex-direction: column; pointer-events: none; }
         #chat-logs { flex: 1; background: rgba(0, 0, 0, 0.45); border-radius: 4px; padding: 10px; overflow-y: auto; color: #fff; font-size: 13px; text-shadow: 1px 1px 2px #000; margin-bottom: 8px; display: flex; flex-direction: column; gap: 4px; }
     </style>
@@ -96,7 +95,7 @@
 
         <div class="logo-wrapper">
             <h1 class="main-title">JERGCRAFT</h1>
-            <div class="subtitle-edition">VOXEL EDITION</div>
+            <div class="subtitle-edition">VOXEL 3D EDITION</div>
             <div class="splash-text">Got your nose!</div>
         </div>
 
@@ -152,7 +151,7 @@
         (function() {
             'use strict';
 
-            // DOM Element Bindings
+            // Document Node Binding Configurations
             const uiMainMenu = document.getElementById('menu-container');
             const uiWorldsMenu = document.getElementById('screen-worlds-selector');
             const uiWizardMenu = document.getElementById('screen-world-wizard');
@@ -163,35 +162,55 @@
             const btnPlayWorld = document.getElementById('btn-world-play');
             const btnDeleteWorld = document.getElementById('btn-world-delete');
 
-            // Operational Variables
             let activeWorldMap = null;
             let currentSelectedWorldId = null;
             let wsUplinkChannel = null;
             let isGameplayActive = false;
 
-            // Mouse Capture System Configuration
-            const mouse = { x: 0, y: 0, targetX: 0, targetY: 0, intensity: 0.15 };
+            // Interactive Dynamic Vectors Configurations
+            const player = { x: 0, y: 0.5, z: 0, speed: 0.06, size: 25, id: 99 };
             
+            // --- 3D CAMERA CONTROLLER DATA PROFILE ---
+            const camera = {
+                yaw: 0.78,       // Horizontal orbit position rotation angle 
+                pitch: -0.45,    // Vertical perspective coordinate look tilt angle
+                targetYaw: 0.78,
+                targetPitch: -0.45,
+                radius: 350,     // Linear focus depth length separation factor from focus anchor
+                fov: 320         // Perspective depth convergence mapping multiplier
+            };
+
+            // Track cursor coordinates displacement metrics
             window.addEventListener('mousemove', (e) => {
-                // Calculate normalized distance offset from center point (-1 to +1)
-                mouse.targetX = (e.clientX / window.innerWidth) * 2 - 1;
-                mouse.targetY = (e.clientY / window.innerHeight) * 2 - 1;
+                // Map screen layout bounds to angular rotational properties boundaries
+                let normX = (e.clientX / window.innerWidth) * 2 - 1;
+                let normY = (e.clientY / window.innerHeight) * 2 - 1;
+
+                if (!isGameplayActive) {
+                    // Menu view adjustments mapping bounds parameters handles values
+                    camera.targetYaw = panoramaAngle + (normX * 0.25);
+                    camera.targetPitch = -0.4 + (normY * 0.2);
+                } else {
+                    // Gameplay mode adjustments mapping bounds parameters handles values
+                    camera.targetYaw = 0.78 + (normX * 1.2); 
+                    camera.targetPitch = -0.5 + (normY * 0.8);
+                }
             });
 
-            // Menu Panoramic Simulation Vector Data
+            // Auto-orbit configuration variables parameters traces
             let panoramaAngle = 0;
             const menuPanoramaWorld = {
                 blocks: [
-                    [-2,0,-2,1],[-1,0,-2,1],[0,0,-2,1],[1,0,-2,1],[2,0,-2,1],
-                    [-2,0,-1,1],[-1,0,-1,1],[0,0,-1,1],[1,0,-1,1],[2,0,-1,1],
-                    [-2,0,0,1], [-1,0,0,1], [0,0,0,1], [1,0,0,1], [2,0,0,1],
-                    [-2,0,1,1], [-1,0,1,1], [0,0,1,1], [1,0,1,1], [2,0,1,1],
-                    [-2,0,2,1], [-1,0,2,1], [0,0,2,1], [1,0,2,1], [2,0,2,1],
-                    [0,1,0,3],[0,2,0,3],[0,3,0,4],[-1,3,0,4],[1,3,0,4],[0,3,-1,4],[0,3,1,4]
+                    [-2,-1,-2,1],[-1,-1,-2,1],[0,-1,-2,1],[1,-1,-2,1],[2,-1,-2,1],
+                    [-2,-1,-1,1],[-1,-1,-1,1],[0,-1,-1,1],[1,-1,-1,1],[2,-1,-1,1],
+                    [-2,-1,0,1], [-1,-1,0,1], [0,-1,0,1], [1,-1,0,1], [2,-1,0,1],
+                    [-2,-1,1,1], [-1,-1,1,1],[0,-1,1,1], [1,-1,1,1], [2,-1,1,1],
+                    [-2,-1,2,1], [-1,-1,2,1], [0,-1,2,1], [1,-1,2,1], [2,-1,2,1],
+                    [0,0,0,3],[0,1,0,3],[0,2,0,4],[-1,2,0,4],[1,2,0,4],[0,2,-1,4],[0,2,1,4]
                 ]
             };
 
-            // --- LOCAL STORAGE WORLDS MANAGER CONTROLLER ---
+            // --- LOCAL STORAGE WORLD DATA HANDLERS ---
             function fetchSavedWorlds() {
                 try {
                     let d = localStorage.getItem('jergcraft_sp_worlds');
@@ -214,14 +233,14 @@
 
             function buildProceduralWorldData(seed) {
                 let map = [];
-                for(let x = -3; x <= 3; x++) {
-                    for(let z = -3; z <= 3; z++) {
-                        map.push([x, 0, z, 1]); 
+                for(let x = -4; x <= 4; x++) {
+                    for(let z = -4; z <= 4; z++) {
+                        map.push([x, -1, z, 1]); 
                     }
                 }
                 let tx = (seed % 3) - 1, tz = ((seed >> 2) % 3) - 1;
-                map.push([tx, 1, tz, 3]); map.push([tx, 2, tz, 3]); 
-                map.push([tx, 3, tz, 4]); map.push([tx-1, 3, tz, 4]); map.push([tx+1, 3, tz, 4]);
+                map.push([tx, 0, tz, 3]); map.push([tx, 1, tz, 3]); 
+                map.push([tx, 2, tz, 4]); map.push([tx-1, 2, tz, 4]); map.push([tx+1, 2, tz, 4]);
                 return map;
             }
 
@@ -260,11 +279,8 @@
 
             function escapeHtml(str) { return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
-            // --- 3D GRAPHICS ISOMETRIC MATHEMATICAL PROJECTOR ENGINE ---
-            const player = { x: 0, y: 1, z: 0, speed: 0.07, size: 34, id: 99 };
-            const camera = { x: 0, y: 0, targetX: 0, targetY: 0, lerp: 0.1 };
+            // --- MATRIX GEOMETRY CONTROLLERS AND LOGICAL LOOPS ---
             const keys = {};
-
             window.addEventListener('keydown', (e) => { keys[e.key.toLowerCase()] = true; });
             window.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
 
@@ -275,51 +291,78 @@
                 if (keys['a'] || keys['arrowleft'])  dx -= player.speed;
                 if (keys['d'] || keys['arrowright']) dx += player.speed;
                 player.x += dx; player.z += dz;
-                player.x = Math.max(-3.3, Math.min(3.3, player.x));
-                player.z = Math.max(-3.3, Math.min(3.3, player.z));
+                player.x = Math.max(-4.3, Math.min(4.3, player.x));
+                player.z = Math.max(-4.3, Math.min(4.3, player.z));
             }
 
-            function projectIsometricVoxelFace(ctx, x, y, z, size, id, customCameraAngle = false) {
+            // --- PROJECTION 3D CORE GRAPHICS PIPELINE ENGINE ---
+            function projectVoxel3DCube(ctx, x, y, z, size, id, focusX, focusY, focusZ) {
+                // Compute absolute position vectors offset from tracking focus coordinates anchor point
+                let relX = (x - focusX) * size * 1.5;
+                let relY = -(y - focusY) * size * 1.5; 
+                let relZ = (z - focusZ) * size * 1.5;
+
+                // Apply Horizontal Yaw rotation axis transformation equations
+                let cosY = Math.cos(camera.yaw), sinY = Math.sin(camera.yaw);
+                let x1 = relX * cosY - relZ * sinY;
+                let z1 = relX * sinY + relZ * cosY;
+
+                // Apply Vertical Pitch rotation axis transformation equations
+                let cosP = Math.cos(camera.pitch), sinP = Math.sin(camera.pitch);
+                let y2 = relY * cosP - z1 * sinP;
+                let z2 = relY * sinP + z1 * cosP;
+
+                // Push depth coordinates out behind viewport array planes handles values index
+                let depthZ = z2 + camera.radius;
+                if (depthZ <= 20) return null; // Avoid divide-by-zero errors
+
+                // Project raw 3D vectors onto local screenspace canvas coordinates
+                let scale = camera.fov / depthZ;
+                let screenX = (canvas.width / 2) + (x1 * scale);
+                let screenY = (canvas.height / 2) + (y2 * scale);
+
+                // Build geometry vertex coordinates list for 3D polygon block structures projection matrix bounds
+                let hs = (size * 0.7) * scale; // Dynamic scale calculation value parameters
+                
+                return {
+                    sx: screenX, sy: screenY, sz: depthZ, h: hs, id: id,
+                    // Track pre-calculated screenspace nodes point maps
+                    verts: [
+                        {x: screenX - hs, y: screenY - hs}, // 0
+                        {x: screenX + hs, y: screenY - hs}, // 1
+                        {x: screenX + hs, y: screenY + hs}, // 2
+                        {x: screenX - hs, y: screenY + hs}  // 3
+                    ]
+                };
+            }
+
+            function drawProjected3DBlockMesh(ctx, p) {
                 let topC, leftC, rightC;
-                if (id === 1) { topC = "#10b981"; leftC = "#047857"; rightC = "#78350f"; } 
-                else if (id === 3) { topC = "#b45309"; leftC = "#451a03"; rightC = "#292524"; } 
-                else if (id === 4) { topC = "#059669"; leftC = "#065f46"; rightC = "#044e3a"; } 
-                else if (id === 99) { topC = "#38bdf8"; leftC = "#0284c7"; rightC = "#1e3a8a"; } 
+                if (p.id === 1) { topC = "#10b981"; leftC = "#047857"; rightC = "#78350f"; } 
+                else if (p.id === 3) { topC = "#b45309"; leftC = "#451a03"; rightC = "#292524"; } 
+                else if (p.id === 4) { topC = "#059669"; leftC = "#065f46"; rightC = "#044e3a"; } 
+                else if (p.id === 99) { topC = "#38bdf8"; leftC = "#0284c7"; rightC = "#1e3a8a"; } 
                 else { topC = "#9ca3af"; leftC = "#6b7280"; rightC = "#4b5563"; }
 
-                let isoX, isoY;
+                let v = p.verts;
+                let h = p.h;
 
-                if (customCameraAngle) {
-                    // Panoramic Matrix Math
-                    let rx = x * Math.cos(panoramaAngle) - z * Math.sin(panoramaAngle);
-                    let rz = x * Math.sin(panoramaAngle) + z * Math.cos(panoramaAngle);
-                    isoX = (rx - rz) * size;
-                    isoY = (rx + rz) * (size / 2) - (y * size * 1.2);
-                } else {
-                    // Regular Tracked Matrix Math
-                    isoX = (x - z) * size;
-                    isoY = (x + z) * (size / 2) - (y * size * 1.2);
-                }
-
-                const cx = (canvas.width / 2) + isoX - camera.x;
-                const cy = (canvas.height / 2) + isoY - camera.y;
-
-                // Render Top Polygon face
+                // Face A: Render Top Cap face boundary shapes
                 ctx.fillStyle = topC; ctx.beginPath();
-                ctx.moveTo(cx, cy - size / 2); ctx.lineTo(cx + size, cy);
-                ctx.lineTo(cx, cy + size / 2); ctx.lineTo(cx - size, cy);
-                ctx.closePath(); ctx.fill(); ctx.strokeStyle = "rgba(0,0,0,0.12)"; ctx.stroke();
+                ctx.moveTo(v[0].x, v[0].y); ctx.lineTo(v[1].x, v[1].y);
+                ctx.lineTo(v[1].x, v[1].y + h*0.4); ctx.lineTo(v[0].x, v[0].y + h*0.4);
+                ctx.closePath(); ctx.fill(); ctx.strokeStyle = "rgba(0,0,0,0.15)"; ctx.stroke();
 
-                // Render Left Face
+                // Face B: Render Left Side wall profiles
                 ctx.fillStyle = leftC; ctx.beginPath();
-                ctx.moveTo(cx - size, cy); ctx.lineTo(cx, cy + size / 2);
-                ctx.lineTo(cx, cy + size / 2 + size); ctx.lineTo(cx - size, cy + size);
+                ctx.moveTo(v[0].x, v[0].y + h*0.4); ctx.lineTo(v[1].x, v[1].y + h*0.4);
+                ctx.lineTo(v[2].x, v[2].y); ctx.lineTo(v[3].x, v[3].y);
                 ctx.closePath(); ctx.fill(); ctx.stroke();
 
-                // Render Right Face
+                // Face C: Render Right side profile accent layers
                 ctx.fillStyle = rightC; ctx.beginPath();
-                ctx.moveTo(cx, cy + size / 2); ctx.lineTo(cx + size, cy);
-                ctx.lineTo(cx + size, cy + size); ctx.lineTo(cx, cy + size / 2 + size);
+                ctx.moveTo(v[1].x, v[1].y); ctx.lineTo(v[1].x + h*0.3, v[1].y + h*0.2);
+                ctx.lineTo(v[2].x, v[2].y); ctx.lineTo(v[1].x, v[1].y + h*0.4);
                 ctx.closePath(); ctx.fill(); ctx.stroke();
             }
 
@@ -329,52 +372,39 @@
                     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
                 }
 
-                // Apply constant mouse tracking easing calculations
-                mouse.x += (mouse.targetX - mouse.x) * 0.08;
-                mouse.y += (mouse.targetY - mouse.y) * 0.08;
+                // Smoothly ease camera transitions towards tracking mouse vectors profiles
+                camera.yaw += (camera.targetYaw - camera.yaw) * 0.08;
+                camera.pitch += (camera.targetPitch - camera.pitch) * 0.08;
+
+                ctx.fillStyle = "#0f172a"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                let focusX = 0, focusY = 0, focusZ = 0;
+                let activeBlockSet = [];
 
                 if (!isGameplayActive) {
-                    // --- SCENE A: MENU PANORAMA LOOP ---
-                    panoramaAngle += 0.0025; // Continuous rotation velocity
-                    
-                    // Center layout camera configurations
-                    camera.x = mouse.x * 60;
-                    camera.y = (mouse.y * 40) - 40;
-
-                    ctx.fillStyle = "#1e1b4b"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                    // Sort components via painter algorithmic values
-                    let menuStack = [...menuPanoramaWorld.blocks];
-                    menuStack.sort((a, b) => {
-                        let rzA = a[0] * Math.sin(panoramaAngle) + a[2] * Math.cos(panoramaAngle);
-                        let rzB = b[0] * Math.sin(panoramaAngle) + b[2] * Math.cos(panoramaAngle);
-                        return rzA - rzB;
-                    });
-
-                    menuStack.forEach(c => { projectIsometricVoxelFace(ctx, c[0], c[1], c[2], 38, c[3], true); });
-
-                } else if (activeWorldMap) {
-                    // --- SCENE B: INTERACTIVE ACTIVE GAMEPLAY ENGINE ---
+                    // --- MODE A: RUN TITLE SPINNING PANORAMA SCENE ---
+                    panoramaAngle += 0.002; 
+                    camera.targetYaw = panoramaAngle;
+                    activeBlockSet = [...menuPanoramaWorld.blocks];
+                } else {
+                    // --- MODE B: RUN INTERACTIVE GAMEPLAY ENGINE SCENE ---
                     processEngineMovement();
-
-                    // Calculate look-at target vector using player coordinates combined with mouse displacement vectors
-                    camera.targetX = ((player.x - player.z) * player.size) + (mouse.x * 140);
-                    camera.targetY = ((player.x + player.z) * (player.size / 2) - (player.y * player.size * 1.2)) + (mouse.y * 90) + 40;
-                    
-                    camera.x += (camera.targetX - camera.x) * camera.lerp;
-                    camera.y += (camera.targetY - camera.y) * camera.lerp;
-
-                    // Clean horizon sky fill
-                    ctx.fillStyle = "#0f172a"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                    let stack = [...activeWorldMap.blocks, [player.x, player.y, player.z, player.id]];
-                    stack.sort((a, b) => {
-                        if (Math.abs(a[1] - b[1]) > 0.1) return a[1] - b[1];
-                        return (a[0] + a[2]) - (b[0] + b[2]);
-                    });
-
-                    stack.forEach(c => { projectIsometricVoxelFace(ctx, c[0], c[1], c[2], player.size, c[3], false); });
+                    focusX = player.x; focusY = player.y; focusZ = player.z;
+                    activeBlockSet = [...activeWorldMap.blocks, [player.x, player.y, player.z, player.id]];
                 }
+
+                // Project raw blocks positions data down into temporary projected space coordinates list
+                let renderStack = [];
+                activeBlockSet.forEach(b => {
+                    let projected = projectVoxel3DCube(ctx, b[0], b[1], b[2], player.size, b[3], focusX, focusY, focusZ);
+                    if (projected) renderStack.push(projected);
+                });
+
+                // Sort rendering sequence via computed depth metrics (Painter's sorting logic algorithm loop)
+                renderStack.sort((a, b) => b.sz - a.sz);
+
+                // Clear layout structures blocks matrix onto screen output lines
+                renderStack.forEach(meshNode => { drawProjected3DBlockMesh(ctx, meshNode); });
 
                 requestAnimationFrame(globalRenderPipelineLoop);
             }
@@ -386,14 +416,13 @@
                 uiWorldsMenu.classList.add('hidden');
                 chatPanel.style.display = 'flex';
                 
-                chatLogs.innerHTML = `<div><b style="color:#facc15;">SYSTEM:</b> <span style="color:#fff;">Entered "${targetWorldProfile.name}". Move player with WASD / Move mouse cursor to look around.</span></div>`;
+                chatLogs.innerHTML = `<div><b style="color:#facc15;">SYSTEM:</b> <span style="color:#fff;">Entered "${targetWorldProfile.name}". Move player with WASD / Move mouse to tilt perspective camera angles.</span></div>`;
                 
-                player.x = 0; player.y = 1; player.z = 0;
+                player.x = 0; player.y = 0.5; player.z = 0;
             }
 
-            // --- COMPREHENSIVE CONTROL INTERFACE MANAGEMENT ROUTERS ---
+            // --- USER LINK EVENT ROUTER HANDLERS INTERFACE ---
             window.addEventListener('DOMContentLoaded', () => {
-                // Initialize background loops instantly
                 globalRenderPipelineLoop();
 
                 document.getElementById('main-btn-singleplayer').onclick = () => {
@@ -441,7 +470,7 @@
 
                 document.getElementById('btn-world-delete').onclick = () => {
                     if(!currentSelectedWorldId) return;
-                    if(confirm("Delete this world structure entirely?")) {
+                    if(confirm("Delete this world layout structural dataset entirely?")) {
                         let worlds = fetchSavedWorlds();
                         worlds = worlds.filter(w => w.id !== currentSelectedWorldId);
                         saveWorldsToBrowser(worlds);
@@ -465,15 +494,15 @@
                     uiMainMenu.classList.add('hidden');
                     chatPanel.style.display = 'flex';
                     
-                    chatLogs.innerHTML = `<div><b style="color:#00ffcc;">MULTIPLAYER:</b> <span style="color:#fff;">Reaching host node wss://JergXCraft.eagler.host...</span></div>`;
+                    chatLogs.innerHTML = `<div><b style="color:#00ffcc;">MULTIPLAYER:</b> <span style="color:#fff;">Connecting to remote target uplink wss://JergXCraft.eagler.host...</span></div>`;
                     
-                    activeWorldMap = { name: "Multiplayer Matrix Node Instance", blocks: buildProceduralWorldData(888) };
+                    activeWorldMap = { name: "Multiplayer Remote Hub Server Instance", blocks: buildProceduralWorldData(999) };
                     isGameplayActive = true;
 
                     try {
                         wsUplinkChannel = new WebSocket("wss://JergXCraft.eagler.host");
                         wsUplinkChannel.onopen = () => {
-                            chatLogs.innerHTML += `<div><b style="color:#00ffcc;">MULTIPLAYER:</b> <span style="color:#4ade80;">Handshake Accepted. Live network stream trace active.</span></div>`;
+                            chatLogs.innerHTML += `<div><b style="color:#00ffcc;">MULTIPLAYER:</b> <span style="color:#4ade80;">Handshake Accepted. Streaming active packets lines.</span></div>`;
                         };
                         wsUplinkChannel.onmessage = (e) => {
                             try {
@@ -482,10 +511,10 @@
                             } catch(err){}
                         };
                         wsUplinkChannel.onclose = () => {
-                            chatLogs.innerHTML += `<div><b style="color:#f87171;">MULTIPLAYER:</b> <span style="color:#f87171;">Connection closed from destination tracking loop.</span></div>`;
+                            chatLogs.innerHTML += `<div><b style="color:#f87171;">MULTIPLAYER:</b> <span style="color:#f87171;">Uplink track channel connection dropped out.</span></div>`;
                         };
                     } catch(err) {
-                        chatLogs.innerHTML += `<div><b style="color:#f87171;">SYSTEM:</b> <span style="color:#fff;">Driver parsing error state encountered.</span></div>`;
+                        chatLogs.innerHTML += `<div><b style="color:#f87171;">SYSTEM:</b> <span style="color:#fff;">Hardware websocket port initialization driver error.</span></div>`;
                     }
                 };
             });
