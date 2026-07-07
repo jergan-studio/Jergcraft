@@ -6,7 +6,7 @@
     <title>EaglercraftZ 1.20 - Main Menu</title>
     
     <style>
-        /* Global CSS Stylesheet */
+        /* Global CSS Reset & Setup */
         html, body {
             margin: 0; padding: 0; width: 100%; height: 100%;
             overflow: hidden; background-color: #000;
@@ -14,16 +14,15 @@
             user-select: none; -webkit-user-select: none;
         }
 
-        /* Main Menu Background Layout Wrapper */
+        /* Transparent overlays to show the 3D animated canvas panorama beneath */
         #menu-container, .screen-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.45)), 
-                        radial-gradient(circle at center bottom, #e07a5f 0%, #3d405b 60%, #0f172a 100%);
-            background-size: cover; z-index: 10;
+            background: rgba(0, 0, 0, 0.25);
+            z-index: 10;
         }
 
-        /* Screens Toggle Class */
+        /* Screens Toggle Utility */
         .hidden { display: none !important; }
 
         /* Corner Text UI Metadata */
@@ -32,7 +31,7 @@
         .bottom-left-info { position: absolute; bottom: 12px; left: 15px; color: #fff; font-size: 13px; font-weight: bold; line-height: 1.4; text-shadow: 1px 1px 2px #000; }
         .bottom-right-info { position: absolute; bottom: 12px; right: 15px; color: #fff; font-size: 13px; font-weight: bold; text-shadow: 1px 1px 2px #000; }
 
-        /* Logo Configuration */
+        /* Minecraft Logo presentation components */
         .logo-wrapper { position: relative; margin-bottom: 35px; text-align: center; }
         .main-title { color: #f3f4f6; font-size: 4rem; font-weight: 900; letter-spacing: 2px; margin: 0; text-shadow: 4px 4px 0px #374151; font-style: italic; }
         .subtitle-edition { color: #f3f4f6; font-size: 1.1rem; font-weight: bold; letter-spacing: 4px; margin-top: -5px; text-shadow: 2px 2px 0px #000; }
@@ -40,11 +39,11 @@
         @keyframes splashPulse { 0% { transform: rotate(-15deg) scale(1.0); } 100% { transform: rotate(-15deg) scale(1.08); } }
         .dev-info-label { color: #e5e7eb; font-size: 14px; font-weight: bold; text-align: center; margin-bottom: 20px; text-shadow: 1px 1px 2px #000; }
 
-        /* Button Stack Structures */
+        /* Button Stack Templates */
         .menu-button-stack { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 400px; box-sizing: border-box; }
         .split-button-row { display: flex; gap: 12px; width: 100%; }
 
-        /* Pixel-Style Button Standard Components */
+        /* Pixel-Style Menu Buttons */
         .mc-btn {
             width: 100%; background: #4b5563; color: #e5e7eb;
             border: 2px solid #1f2937; border-top-color: #9ca3af; border-left-color: #6b7280;
@@ -56,10 +55,10 @@
         .mc-btn:active { padding-top: 12px; padding-bottom: 8px; box-shadow: inset 0 2px 0 rgba(0,0,0,0.5); }
         .mc-btn.disabled { background: rgba(31, 41, 55, 0.6); color: #9ca3af; border-color: #111827; cursor: not-allowed; box-shadow: none; text-shadow: none; }
 
-        /* Worlds Selection System Window HUD Components */
+        /* Worlds Selector UI */
         .screen-title { color: #fff; font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; text-shadow: 2px 2px 0px #000; }
         .world-list-box {
-            width: 100%; max-width: 440px; height: 280px; background: rgba(0,0,0,0.6);
+            width: 100%; max-width: 440px; height: 280px; background: rgba(0,0,0,0.75);
             border: 2px solid #1f2937; overflow-y: auto; margin-bottom: 20px;
             padding: 8px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px;
         }
@@ -74,18 +73,22 @@
         .w-name { color: #fff; font-weight: bold; font-size: 14px; }
         .w-date { color: #9ca3af; font-size: 11px; }
 
-        /* Mini Utility Modals */
+        /* Modals */
         .input-dialog { background: #1e293b; border: 3px solid #4b5563; padding: 20px; border-radius: 4px; box-shadow: 0 10px 25px rgba(0,0,0,0.6); text-align: center; }
         .mc-input { background: #000; border: 2px solid #4b5563; color: #fff; padding: 10px; width: 260px; font-size: 14px; outline: none; margin-bottom: 15px; font-family: monospace; }
         .mc-input:focus { border-color: #facc15; }
 
-        /* Game Running Viewport Elements */
-        #render-canvas { display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
+        /* Graphics Drawing Canvas Frame Element */
+        #render-canvas { display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
+        
+        /* Gameplay Text HUD */
         #chat-panel { position: fixed; bottom: 20px; left: 20px; width: 380px; height: 220px; z-index: 50; display: none; flex-direction: column; pointer-events: none; }
         #chat-logs { flex: 1; background: rgba(0, 0, 0, 0.45); border-radius: 4px; padding: 10px; overflow-y: auto; color: #fff; font-size: 13px; text-shadow: 1px 1px 2px #000; margin-bottom: 8px; display: flex; flex-direction: column; gap: 4px; }
     </style>
 </head>
 <body>
+
+    <canvas id="render-canvas"></canvas>
 
     <div id="menu-container">
         <div class="corner-info">Based Off EaglercraftX<br>By Lax1dude</div>
@@ -116,8 +119,7 @@
     <div id="screen-worlds-selector" class="screen-overlay hidden">
         <div class="screen-title">Select World</div>
         
-        <div class="world-list-box" id="container-world-items">
-            </div>
+        <div class="world-list-box" id="container-world-items"></div>
 
         <div class="menu-button-stack">
             <div class="split-button-row">
@@ -142,8 +144,6 @@
         </div>
     </div>
 
-    <canvas id="render-canvas"></canvas>
-
     <div id="chat-panel">
         <div id="chat-logs"></div>
     </div>
@@ -152,23 +152,46 @@
         (function() {
             'use strict';
 
-            // Document Target Nodes Elements Mapping Layout Handles
+            // DOM Element Bindings
             const uiMainMenu = document.getElementById('menu-container');
             const uiWorldsMenu = document.getElementById('screen-worlds-selector');
             const uiWizardMenu = document.getElementById('screen-world-wizard');
             const canvas = document.getElementById('render-canvas');
             const chatPanel = document.getElementById('chat-panel');
             const chatLogs = document.getElementById('chat-logs');
-
             const worldListContainer = document.getElementById('container-world-items');
             const btnPlayWorld = document.getElementById('btn-world-play');
             const btnDeleteWorld = document.getElementById('btn-world-delete');
 
-            let activeLoadedWorld = null;
+            // Operational Variables
+            let activeWorldMap = null;
             let currentSelectedWorldId = null;
             let wsUplinkChannel = null;
+            let isGameplayActive = false;
 
-            // --- WORLDS DB CONTROLLER CORE MODULE ---
+            // Mouse Capture System Configuration
+            const mouse = { x: 0, y: 0, targetX: 0, targetY: 0, intensity: 0.15 };
+            
+            window.addEventListener('mousemove', (e) => {
+                // Calculate normalized distance offset from center point (-1 to +1)
+                mouse.targetX = (e.clientX / window.innerWidth) * 2 - 1;
+                mouse.targetY = (e.clientY / window.innerHeight) * 2 - 1;
+            });
+
+            // Menu Panoramic Simulation Vector Data
+            let panoramaAngle = 0;
+            const menuPanoramaWorld = {
+                blocks: [
+                    [-2,0,-2,1],[-1,0,-2,1],[0,0,-2,1],[1,0,-2,1],[2,0,-2,1],
+                    [-2,0,-1,1],[-1,0,-1,1],[0,0,-1,1],[1,0,-1,1],[2,0,-1,1],
+                    [-2,0,0,1], [-1,0,0,1], [0,0,0,1], [1,0,0,1], [2,0,0,1],
+                    [-2,0,1,1], [-1,0,1,1], [0,0,1,1], [1,0,1,1], [2,0,1,1],
+                    [-2,0,2,1], [-1,0,2,1], [0,0,2,1], [1,0,2,1], [2,0,2,1],
+                    [0,1,0,3],[0,2,0,3],[0,3,0,4],[-1,3,0,4],[1,3,0,4],[0,3,-1,4],[0,3,1,4]
+                ]
+            };
+
+            // --- LOCAL STORAGE WORLDS MANAGER CONTROLLER ---
             function fetchSavedWorlds() {
                 try {
                     let d = localStorage.getItem('jergcraft_sp_worlds');
@@ -189,25 +212,16 @@
                 try { localStorage.setItem('jergcraft_sp_worlds', JSON.stringify(arr)); } catch(e){}
             }
 
-            // Builds structural array of isometric voxel landscape vectors dynamically
             function buildProceduralWorldData(seed) {
                 let map = [];
-                // Build a 6x6 floor grid terrain platform surface structure matrix
                 for(let x = -3; x <= 3; x++) {
                     for(let z = -3; z <= 3; z++) {
-                        map.push([x, 0, z, 1]); // 1 = Grass block ID type
+                        map.push([x, 0, z, 1]); 
                     }
                 }
-                // Construct basic procedural vertical tree logs layer elements near center mapping
-                let tx = (seed % 3) - 1; 
-                let tz = ((seed >> 2) % 3) - 1;
-                map.push([tx, 1, tz, 3]); // Log Column
-                map.push([tx, 2, tz, 3]); 
-                map.push([tx, 3, tz, 4]); // Green Leaves Cluster Canopy
-                map.push([tx-1, 3, tz, 4]);
-                map.push([tx+1, 3, tz, 4]);
-                map.push([tx, 3, tz-1, 4]);
-                map.push([tx, 3, tz+1, 4]);
+                let tx = (seed % 3) - 1, tz = ((seed >> 2) % 3) - 1;
+                map.push([tx, 1, tz, 3]); map.push([tx, 2, tz, 3]); 
+                map.push([tx, 3, tz, 4]); map.push([tx-1, 3, tz, 4]); map.push([tx+1, 3, tz, 4]);
                 return map;
             }
 
@@ -230,7 +244,7 @@
                     row.innerHTML = `
                         <div class="world-meta">
                             <span class="w-name">${escapeHtml(w.name)}</span>
-                            <span class="w-date">In-Game Mode: Survival (Seed: ${w.seed}) — Last Played: ${w.stamp}</span>
+                            <span class="w-date">Survival Mode (Seed: ${w.seed}) — Last Played: ${w.stamp}</span>
                         </div>
                     `;
                     row.onclick = function() {
@@ -246,7 +260,7 @@
 
             function escapeHtml(str) { return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
-            // --- 3D GRAPHICS ISOMETRIC RUNTIME LOGIC ENGINE ENGINE ---
+            // --- 3D GRAPHICS ISOMETRIC MATHEMATICAL PROJECTOR ENGINE ---
             const player = { x: 0, y: 1, z: 0, speed: 0.07, size: 34, id: 99 };
             const camera = { x: 0, y: 0, targetX: 0, targetY: 0, lerp: 0.1 };
             const keys = {};
@@ -265,7 +279,7 @@
                 player.z = Math.max(-3.3, Math.min(3.3, player.z));
             }
 
-            function projectIsometricVoxelFace(ctx, x, y, z, size, id) {
+            function projectIsometricVoxelFace(ctx, x, y, z, size, id, customCameraAngle = false) {
                 let topC, leftC, rightC;
                 if (id === 1) { topC = "#10b981"; leftC = "#047857"; rightC = "#78350f"; } 
                 else if (id === 3) { topC = "#b45309"; leftC = "#451a03"; rightC = "#292524"; } 
@@ -273,16 +287,28 @@
                 else if (id === 99) { topC = "#38bdf8"; leftC = "#0284c7"; rightC = "#1e3a8a"; } 
                 else { topC = "#9ca3af"; leftC = "#6b7280"; rightC = "#4b5563"; }
 
-                const isoX = (x - z) * size;
-                const isoY = (x + z) * (size / 2) - (y * size * 1.2);
+                let isoX, isoY;
+
+                if (customCameraAngle) {
+                    // Panoramic Matrix Math
+                    let rx = x * Math.cos(panoramaAngle) - z * Math.sin(panoramaAngle);
+                    let rz = x * Math.sin(panoramaAngle) + z * Math.cos(panoramaAngle);
+                    isoX = (rx - rz) * size;
+                    isoY = (rx + rz) * (size / 2) - (y * size * 1.2);
+                } else {
+                    // Regular Tracked Matrix Math
+                    isoX = (x - z) * size;
+                    isoY = (x + z) * (size / 2) - (y * size * 1.2);
+                }
+
                 const cx = (canvas.width / 2) + isoX - camera.x;
                 const cy = (canvas.height / 2) + isoY - camera.y;
 
-                // Render Top polygon plane face matrix elements
+                // Render Top Polygon face
                 ctx.fillStyle = topC; ctx.beginPath();
                 ctx.moveTo(cx, cy - size / 2); ctx.lineTo(cx + size, cy);
                 ctx.lineTo(cx, cy + size / 2); ctx.lineTo(cx - size, cy);
-                ctx.closePath(); ctx.fill(); ctx.strokeStyle = "rgba(0,0,0,0.15)"; ctx.stroke();
+                ctx.closePath(); ctx.fill(); ctx.strokeStyle = "rgba(0,0,0,0.12)"; ctx.stroke();
 
                 // Render Left Face
                 ctx.fillStyle = leftC; ctx.beginPath();
@@ -297,57 +323,79 @@
                 ctx.closePath(); ctx.fill(); ctx.stroke();
             }
 
-            function frameGraphicsRenderLoop() {
-                if (canvas.style.display !== 'block' || !activeLoadedWorld) return;
+            function globalRenderPipelineLoop() {
                 const ctx = canvas.getContext('2d');
-                
                 if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
                     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
                 }
 
-                processEngineMovement();
+                // Apply constant mouse tracking easing calculations
+                mouse.x += (mouse.targetX - mouse.x) * 0.08;
+                mouse.y += (mouse.targetY - mouse.y) * 0.08;
 
-                // Process camera vector transformations targets
-                camera.targetX = (player.x - player.z) * player.size;
-                camera.targetY = (player.x + player.z) * (player.size / 2) - (player.y * player.size * 1.2) + 30;
-                camera.x += (camera.targetX - camera.x) * camera.lerp;
-                camera.y += (camera.targetY - camera.y) * camera.lerp;
+                if (!isGameplayActive) {
+                    // --- SCENE A: MENU PANORAMA LOOP ---
+                    panoramaAngle += 0.0025; // Continuous rotation velocity
+                    
+                    // Center layout camera configurations
+                    camera.x = mouse.x * 60;
+                    camera.y = (mouse.y * 40) - 40;
 
-                // Clear frame pipeline buffer setup background layer
-                ctx.fillStyle = "#1e293b"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = "#1e1b4b"; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // Build composite render stack array elements list mapping matrices references
-                let stack = [...activeLoadedWorld.blocks, [player.x, player.y, player.z, player.id]];
-                stack.sort((a, b) => {
-                    if (Math.abs(a[1] - b[1]) > 0.1) return a[1] - b[1];
-                    return (a[0] + a[2]) - (b[0] + b[2]);
-                });
+                    // Sort components via painter algorithmic values
+                    let menuStack = [...menuPanoramaWorld.blocks];
+                    menuStack.sort((a, b) => {
+                        let rzA = a[0] * Math.sin(panoramaAngle) + a[2] * Math.cos(panoramaAngle);
+                        let rzB = b[0] * Math.sin(panoramaAngle) + b[2] * Math.cos(panoramaAngle);
+                        return rzA - rzB;
+                    });
 
-                // Flush project stack processing block nodes elements onto spatial engine map dimensions
-                stack.forEach(c => { projectIsometricVoxelFace(ctx, c[0], c[1], c[2], player.size, c[3]); });
-                requestAnimationFrame(frameGraphicsRenderLoop);
+                    menuStack.forEach(c => { projectIsometricVoxelFace(ctx, c[0], c[1], c[2], 38, c[3], true); });
+
+                } else if (activeWorldMap) {
+                    // --- SCENE B: INTERACTIVE ACTIVE GAMEPLAY ENGINE ---
+                    processEngineMovement();
+
+                    // Calculate look-at target vector using player coordinates combined with mouse displacement vectors
+                    camera.targetX = ((player.x - player.z) * player.size) + (mouse.x * 140);
+                    camera.targetY = ((player.x + player.z) * (player.size / 2) - (player.y * player.size * 1.2)) + (mouse.y * 90) + 40;
+                    
+                    camera.x += (camera.targetX - camera.x) * camera.lerp;
+                    camera.y += (camera.targetY - camera.y) * camera.lerp;
+
+                    // Clean horizon sky fill
+                    ctx.fillStyle = "#0f172a"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    let stack = [...activeWorldMap.blocks, [player.x, player.y, player.z, player.id]];
+                    stack.sort((a, b) => {
+                        if (Math.abs(a[1] - b[1]) > 0.1) return a[1] - b[1];
+                        return (a[0] + a[2]) - (b[0] + b[2]);
+                    });
+
+                    stack.forEach(c => { projectIsometricVoxelFace(ctx, c[0], c[1], c[2], player.size, c[3], false); });
+                }
+
+                requestAnimationFrame(globalRenderPipelineLoop);
             }
 
             function loadAndBootEngineSession(targetWorldProfile) {
-                activeLoadedWorld = targetWorldProfile;
-                uiWorldsMenu.classList.add('hidden');
+                isGameplayActive = true;
+                activeWorldMap = targetWorldProfile;
                 
-                canvas.style.display = 'block';
+                uiWorldsMenu.classList.add('hidden');
                 chatPanel.style.display = 'flex';
                 
-                chatLogs.innerHTML = `<div><b style="color:#facc15;">SYSTEM:</b> <span style="color:#fff;">Entered world "${targetWorldProfile.name}". Use WASD/Arrows to move player voxel.</span></div>`;
+                chatLogs.innerHTML = `<div><b style="color:#facc15;">SYSTEM:</b> <span style="color:#fff;">Entered "${targetWorldProfile.name}". Move player with WASD / Move mouse cursor to look around.</span></div>`;
                 
-                // Set default baseline spatial layout positioning coordinate vectors handles values
                 player.x = 0; player.y = 1; player.z = 0;
-                camera.x = 0; camera.y = 0;
-
-                frameGraphicsRenderLoop();
             }
 
-            // --- NAVIGATION ROUTING INTERFACE SYSTEM CAPTURING HANDLING ---
+            // --- COMPREHENSIVE CONTROL INTERFACE MANAGEMENT ROUTERS ---
             window.addEventListener('DOMContentLoaded', () => {
+                // Initialize background loops instantly
+                globalRenderPipelineLoop();
 
-                // Primary Screens Link Handles triggers routing mappings
                 document.getElementById('main-btn-singleplayer').onclick = () => {
                     uiMainMenu.classList.add('hidden');
                     uiWorldsMenu.classList.remove('hidden');
@@ -360,7 +408,7 @@
                 };
 
                 document.getElementById('btn-world-create-prompt').onclick = () => {
-                    document.getElementById('input-world-name').value = "New World";
+                    document.getElementById('input-world-name').value = "New World Map";
                     uiWizardMenu.classList.remove('hidden');
                 };
 
@@ -370,7 +418,7 @@
 
                 document.getElementById('btn-wizard-confirm').onclick = () => {
                     let nameField = document.getElementById('input-world-name').value.trim();
-                    if(!nameField) nameField = "Unnamed World Seed";
+                    if(!nameField) nameField = "Custom World Seed";
                     
                     let worlds = fetchSavedWorlds();
                     let randomSeed = Math.floor(Math.random() * 99999);
@@ -393,7 +441,7 @@
 
                 document.getElementById('btn-world-delete').onclick = () => {
                     if(!currentSelectedWorldId) return;
-                    if(confirm("Are you sure you want to delete this world dimension footprint forever?")) {
+                    if(confirm("Delete this world structure entirely?")) {
                         let worlds = fetchSavedWorlds();
                         worlds = worlds.filter(w => w.id !== currentSelectedWorldId);
                         saveWorldsToBrowser(worlds);
@@ -406,7 +454,6 @@
                     let worlds = fetchSavedWorlds();
                     let target = worlds.find(w => w.id === currentSelectedWorldId);
                     if(target) {
-                        // Update timing footprint reference trace timestamp metric value parameters records
                         let now = new Date();
                         target.stamp = `${now.getMonth()+1}/${String(now.getDate()).padStart(2,'0')}/${String(now.getFullYear()).substring(2)} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
                         saveWorldsToBrowser(worlds);
@@ -414,34 +461,31 @@
                     }
                 };
 
-                // Multiplayer Stream Option Trigger
                 document.getElementById('main-btn-multiplayer').onclick = () => {
                     uiMainMenu.classList.add('hidden');
-                    canvas.style.display = 'block';
                     chatPanel.style.display = 'flex';
                     
-                    chatLogs.innerHTML = `<div><b style="color:#00ffcc;">MULTIPLAYER:</b> <span style="color:#fff;">Connecting stream pipeline to target wss://JergXCraft.eagler.host...</span></div>`;
+                    chatLogs.innerHTML = `<div><b style="color:#00ffcc;">MULTIPLAYER:</b> <span style="color:#fff;">Reaching host node wss://JergXCraft.eagler.host...</span></div>`;
                     
-                    // Create simulated mapping architecture footprint vectors to keep viewport functional during transmission
-                    activeLoadedWorld = { name: "Multiplayer Buffer Server Node Instance", blocks: buildProceduralWorldData(777) };
-                    frameGraphicsRenderLoop();
+                    activeWorldMap = { name: "Multiplayer Matrix Node Instance", blocks: buildProceduralWorldData(888) };
+                    isGameplayActive = true;
 
                     try {
                         wsUplinkChannel = new WebSocket("wss://JergXCraft.eagler.host");
                         wsUplinkChannel.onopen = () => {
-                            chatLogs.innerHTML += `<div><b style="color:#00ffcc;">MULTIPLAYER:</b> <span style="color:#4ade80;">Uplink fully verified! Streaming network channel active.</span></div>`;
+                            chatLogs.innerHTML += `<div><b style="color:#00ffcc;">MULTIPLAYER:</b> <span style="color:#4ade80;">Handshake Accepted. Live network stream trace active.</span></div>`;
                         };
                         wsUplinkChannel.onmessage = (e) => {
                             try {
                                 let d = JSON.parse(e.data);
-                                if(d.type === "WORLD_DATA") activeLoadedWorld.blocks = d.map.blocks;
+                                if(d.type === "WORLD_DATA") activeWorldMap.blocks = d.map.blocks;
                             } catch(err){}
                         };
                         wsUplinkChannel.onclose = () => {
-                            chatLogs.innerHTML += `<div><b style="color:#f87171;">MULTIPLAYER:</b> <span style="color:#f87171;">Connection dropped from remote network destination socket route stream track.</span></div>`;
+                            chatLogs.innerHTML += `<div><b style="color:#f87171;">MULTIPLAYER:</b> <span style="color:#f87171;">Connection closed from destination tracking loop.</span></div>`;
                         };
                     } catch(err) {
-                        chatLogs.innerHTML += `<div><b style="color:#f87171;">SYSTEM ERROR:</b> <span style="color:#fff;">Websocket driver instantiation failure state recorded.</span></div>`;
+                        chatLogs.innerHTML += `<div><b style="color:#f87171;">SYSTEM:</b> <span style="color:#fff;">Driver parsing error state encountered.</span></div>`;
                     }
                 };
             });
