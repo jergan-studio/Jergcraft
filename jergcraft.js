@@ -4,7 +4,7 @@
     console.log("[Jergcraft Core] Engine initialized.");
 
     const MOBILE_URL = "https://irv77.github.io/EaglerPocketMobile/demo/";
-    const COMPUTER_URL = "https://eaglercraft.app/web/";
+    const COMPUTER_URL = "https://jerg-crafter.vercel.app/jergcraft/index.html";
 
 
     function launchGameInstance(url) {
