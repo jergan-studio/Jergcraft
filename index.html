@@ -1,16 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<title>Jergcraft</title>
-
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="mobile-web-app-capable" content="yes">
-
+<title>Jergcraft Launcher</title>
 
 <style>
 
@@ -20,18 +16,14 @@ html, body {
     width:100%;
     height:100%;
     overflow:hidden;
-    background:#0d0d0d;
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    user-select:none;
-    -webkit-user-select:none;
+    font-family:Arial, sans-serif;
+    background:#111;
 }
 
 
 #menu-container {
 
     position:fixed;
-    top:0;
-    left:0;
 
     width:100%;
     height:100%;
@@ -42,14 +34,17 @@ html, body {
     align-items:center;
     justify-content:center;
 
+
     background:
     linear-gradient(
-        135deg,
-        #1c1c1c 0%,
-        #0d0d0d 100%
-    );
+        rgba(0,0,0,.45),
+        rgba(0,0,0,.75)
+    ),
+    url("https://i.imgur.com/8fK4Q3R.png");
 
-    z-index:999;
+
+    background-size:cover;
+    background-position:center;
 
 }
 
@@ -59,20 +54,33 @@ h1 {
 
     color:white;
 
-    font-size:3.5rem;
+    font-size:70px;
 
-    margin-top:0;
-    margin-bottom:2.5rem;
+    font-weight:900;
+
+    letter-spacing:5px;
+
 
     text-shadow:
-    0 5px 15px rgba(0,0,0,0.6);
+    4px 4px 0 #222,
+    -2px -2px 0 #222;
 
-    letter-spacing:4px;
 
-    font-weight:800;
+    margin:0 0 10px 0;
 
 }
 
+
+
+.version {
+
+    color:#ddd;
+
+    font-size:18px;
+
+    margin-bottom:35px;
+
+}
 
 
 
@@ -80,70 +88,76 @@ h1 {
 
     display:flex;
 
-    gap:25px;
+    flex-direction:column;
 
-    flex-wrap:wrap;
+    gap:15px;
 
-    justify-content:center;
-
-    margin-bottom:20px;
-
-    width:100%;
-
-    max-width:600px;
+    width:350px;
 
 }
-
-
 
 
 
 .menu-btn {
 
-    background:#333333;
+
+    background:#727272;
+
 
     color:white;
 
-    border:2px solid #555555;
 
-    padding:
-    18px 45px;
+    border:3px solid #222;
 
-    font-size:1.4rem;
+
+    padding:18px;
+
+
+    font-size:22px;
+
 
     font-weight:bold;
 
+
     cursor:pointer;
 
-    border-radius:6px;
+
+    text-shadow:
+    2px 2px #333;
 
 
     box-shadow:
-    0 6px 10px rgba(0,0,0,0.4);
+
+    inset 0 3px rgba(255,255,255,.2),
+
+    0 5px 0 #111;
 
 
-    transition:
-    background-color .2s,
-    border-color .2s,
-    transform .1s;
+
+    transition:.1s;
 
 }
+
 
 
 
 .menu-btn:hover {
 
-    background:#444444;
-
-    border-color:#888888;
+    background:#8b8b8b;
 
 }
 
 
 
+
 .menu-btn:active {
 
-    transform:scale(.96);
+    transform:translateY(4px);
+
+
+    box-shadow:
+
+    inset 0 3px rgba(0,0,0,.3);
 
 }
 
@@ -167,9 +181,8 @@ h1 {
 
     left:0;
 
-    z-index:1;
-
 }
+
 
 
 </style>
@@ -183,47 +196,30 @@ h1 {
 <div id="menu-container">
 
 
-<h1>JERGCRAFT</h1>
+<h1>
+JERGCRAFT
+</h1>
 
 
-<div style="
-color:#888;
-font-size:14px;
-margin-bottom:20px;
-">
-
-UPD!: theres none
-
+<div class="version">
+Minecraft Edition • Jergcraft Launcher
 </div>
-
 
 
 <div class="button-group">
 
 
 <button class="menu-btn" id="btn-manual-mobile">
-
 MOBILE
-
 </button>
-
 
 
 <button class="menu-btn" id="btn-manual-comp">
-
 COMPUTER
-
 </button>
 
 
-</div>
-
-
-
-</div>
-
-
-
+</div></div>
 
 
 <iframe
@@ -243,9 +239,8 @@ xr-spatial-tracking
 
 
 
-
-
 <script src="jergcraft.js?v=1.0.1"></script>
+
 
 
 </body>
