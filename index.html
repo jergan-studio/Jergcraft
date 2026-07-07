@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
 <title>Jergcraft</title>
@@ -10,7 +11,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
 
+
 <style>
+
 html, body {
     margin:0;
     padding:0;
@@ -18,140 +21,159 @@ html, body {
     height:100%;
     overflow:hidden;
     background:#0d0d0d;
-    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     user-select:none;
     -webkit-user-select:none;
 }
 
+
 #menu-container {
+
     position:fixed;
     top:0;
     left:0;
+
     width:100%;
     height:100%;
+
     display:flex;
     flex-direction:column;
+
     align-items:center;
     justify-content:center;
-    background:linear-gradient(135deg,#1c1c1c 0%,#0d0d0d 100%);
+
+    background:
+    linear-gradient(
+        135deg,
+        #1c1c1c 0%,
+        #0d0d0d 100%
+    );
+
     z-index:999;
+
 }
+
+
 
 h1 {
+
     color:white;
+
     font-size:3.5rem;
-    margin:0 0 2.5rem 0;
-    text-shadow:0 5px 15px rgba(0,0,0,.6);
+
+    margin-top:0;
+    margin-bottom:2.5rem;
+
+    text-shadow:
+    0 5px 15px rgba(0,0,0,0.6);
+
     letter-spacing:4px;
+
     font-weight:800;
+
 }
+
+
+
 
 .button-group {
+
     display:flex;
+
     gap:25px;
+
     flex-wrap:wrap;
+
     justify-content:center;
+
     margin-bottom:20px;
+
     width:100%;
+
     max-width:600px;
+
 }
+
+
+
+
 
 .menu-btn {
-    background:#333;
+
+    background:#333333;
+
     color:white;
-    border:2px solid #555;
-    padding:18px 45px;
+
+    border:2px solid #555555;
+
+    padding:
+    18px 45px;
+
     font-size:1.4rem;
+
     font-weight:bold;
+
     cursor:pointer;
+
     border-radius:6px;
-    box-shadow:0 6px 10px rgba(0,0,0,.4);
-    transition:.2s;
+
+
+    box-shadow:
+    0 6px 10px rgba(0,0,0,0.4);
+
+
+    transition:
+    background-color .2s,
+    border-color .2s,
+    transform .1s;
+
 }
+
+
 
 .menu-btn:hover {
-    background:#444;
-    border-color:#888;
+
+    background:#444444;
+
+    border-color:#888888;
+
 }
+
+
 
 .menu-btn:active {
+
     transform:scale(.96);
+
 }
+
+
+
+
 
 #game-frame {
+
     width:100%;
+
     height:100%;
+
     border:none;
+
     display:none;
+
     position:absolute;
+
     top:0;
+
     left:0;
+
     z-index:1;
+
 }
 
-
-/* JergServer Menu */
-
-#jerg-dashboard-modal {
-    position:fixed;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    width:320px;
-    background:#141414;
-    border:2px solid #00ffcc;
-    border-radius:8px;
-    padding:25px;
-    color:white;
-    box-shadow:0 10px 30px rgba(0,0,0,.8);
-    z-index:1005;
-    display:none;
-    text-align:center;
-}
-
-
-.dashboard-input {
-    width:90%;
-    background:#222;
-    border:1px solid #444;
-    padding:10px;
-    border-radius:4px;
-    color:white;
-    text-align:center;
-    font-size:14px;
-    margin-bottom:12px;
-}
-
-
-.dashboard-btn-group {
-    display:flex;
-    gap:10px;
-    margin-top:5px;
-}
-
-
-.dashboard-btn {
-    flex:1;
-    padding:10px;
-    border-radius:4px;
-    border:none;
-    cursor:pointer;
-    font-weight:bold;
-}
-
-
-.btn-add {
-    background:#00ffcc;
-    color:#141414;
-}
-
-
-.btn-close {
-    background:#444;
-    color:white;
-}
 
 </style>
+
 </head>
 
 
@@ -160,88 +182,66 @@ h1 {
 
 <div id="menu-container">
 
-    <h1>JERGCRAFT</h1>
 
-    <div style="color:#888;font-size:14px;margin-bottom:20px;">
-        UPD!: theres none
-    </div>
+<h1>JERGCRAFT</h1>
 
 
-    <div class="button-group">
+<div style="
+color:#888;
+font-size:14px;
+margin-bottom:20px;
+">
 
-        <button class="menu-btn" id="btn-manual-mobile">
-            MOBILE
-        </button>
-
-        <button class="menu-btn" id="btn-manual-comp">
-            COMPUTER
-        </button>
-
-    </div>
-
-
-    <div class="button-group">
-
-        <button class="menu-btn" id="btn-open-jergservers">
-            OPEN YOUR JERGSERVERS
-        </button>
-
-    </div>
-
+UPD!: theres none
 
 </div>
 
 
 
-<div id="jerg-dashboard-modal">
-
-<h3 style="color:#00ffcc;">
-JERGSERVER MANAGER
-</h3>
-
-<p style="color:#888;font-size:12px;">
-Connect your secure https:// domain servers
-</p>
+<div class="button-group">
 
 
-<input 
-id="jerg-input-name"
-class="dashboard-input"
-placeholder="Server Name">
+<button class="menu-btn" id="btn-manual-mobile">
 
+MOBILE
 
-<input 
-id="jerg-input-url"
-class="dashboard-input"
-placeholder="https://your-domain.com">
-
-
-<div class="dashboard-btn-group">
-
-<button 
-class="dashboard-btn btn-add"
-id="btn-dashboard-submit">
-ADD JERGSERVER
 </button>
 
 
-<button 
-class="dashboard-btn btn-close"
-id="btn-dashboard-close">
-CLOSE
+
+<button class="menu-btn" id="btn-manual-comp">
+
+COMPUTER
+
 </button>
 
 
 </div>
 
+
+
 </div>
 
 
 
-<iframe 
+
+
+<iframe
+
 id="game-frame"
-allow="autoplay; gamepad; fullscreen; keyboard; pointer-lock; xr-spatial-tracking">
+
+allow="
+autoplay;
+gamepad;
+fullscreen;
+keyboard;
+pointer-lock;
+xr-spatial-tracking
+">
+
 </iframe>
+
+
 
 
 
@@ -249,4 +249,5 @@ allow="autoplay; gamepad; fullscreen; keyboard; pointer-lock; xr-spatial-trackin
 
 
 </body>
+
 </html>
