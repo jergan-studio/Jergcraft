@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Jergcraft</title>
+    <title>EaglercraftZ 1.20 - Main Menu</title>
     
     <style>
+        /* Global CSS Stylesheet */
         html, body {
             margin: 0; padding: 0; width: 100%; height: 100%;
             overflow: hidden; background-color: #000;
@@ -13,79 +14,75 @@
             user-select: none; -webkit-user-select: none;
         }
 
-        #menu-container {
+        /* Main Menu Background Layout Wrapper */
+        #menu-container, .screen-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4)), 
+            background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.45)), 
                         radial-gradient(circle at center bottom, #e07a5f 0%, #3d405b 60%, #0f172a 100%);
             background-size: cover; z-index: 10;
         }
 
-        .corner-info {
-            position: absolute; top: 12px; left: 15px;
-            color: #fcd34d; font-size: 13px; font-weight: bold;
-            line-height: 1.4; text-shadow: 1px 1px 2px #000;
-        }
+        /* Screens Toggle Class */
+        .hidden { display: none !important; }
 
-        .credits-indicator {
-            position: absolute; top: 15px; right: 20px;
-            background: rgba(0, 0, 0, 0.4); border: 2px solid #374151;
-            padding: 6px 16px; color: #d1d5db; font-size: 13px; font-weight: bold;
-            border-radius: 2px;
-        }
+        /* Corner Text UI Metadata */
+        .corner-info { position: absolute; top: 12px; left: 15px; color: #facc15; font-size: 13px; font-weight: bold; line-height: 1.4; text-shadow: 1px 1px 2px #000; }
+        .credits-indicator { position: absolute; top: 15px; right: 20px; background: rgba(0, 0, 0, 0.4); border: 2px solid #374151; padding: 6px 16px; color: #d1d5db; font-size: 13px; font-weight: bold; border-radius: 2px; }
+        .bottom-left-info { position: absolute; bottom: 12px; left: 15px; color: #fff; font-size: 13px; font-weight: bold; line-height: 1.4; text-shadow: 1px 1px 2px #000; }
+        .bottom-right-info { position: absolute; bottom: 12px; right: 15px; color: #fff; font-size: 13px; font-weight: bold; text-shadow: 1px 1px 2px #000; }
 
-        .logo-wrapper {
-            position: relative; margin-bottom: 40px; text-align: center;
-        }
-        .main-title {
-            color: #f3f4f6; font-size: 4rem; font-weight: 900; letter-spacing: 2px;
-            margin: 0; text-shadow: 4px 4px 0px #374151; font-style: italic;
-        }
-        .subtitle-edition {
-            color: #f3f4f6; font-size: 1.1rem; font-weight: bold; letter-spacing: 4px;
-            margin-top: -5px; text-shadow: 2px 2px 0px #000;
-        }
+        /* Logo Configuration */
+        .logo-wrapper { position: relative; margin-bottom: 35px; text-align: center; }
+        .main-title { color: #f3f4f6; font-size: 4rem; font-weight: 900; letter-spacing: 2px; margin: 0; text-shadow: 4px 4px 0px #374151; font-style: italic; }
+        .subtitle-edition { color: #f3f4f6; font-size: 1.1rem; font-weight: bold; letter-spacing: 4px; margin-top: -5px; text-shadow: 2px 2px 0px #000; }
+        .splash-text { position: absolute; right: -40px; bottom: -10px; color: #facc15; font-size: 1.3rem; font-weight: bold; transform: rotate(-15deg); text-shadow: 2px 2px 0px #000; animation: splashPulse 0.5s infinite alternate ease-in-out; }
+        @keyframes splashPulse { 0% { transform: rotate(-15deg) scale(1.0); } 100% { transform: rotate(-15deg) scale(1.08); } }
+        .dev-info-label { color: #e5e7eb; font-size: 14px; font-weight: bold; text-align: center; margin-bottom: 20px; text-shadow: 1px 1px 2px #000; }
 
-        .splash-text {
-            position: absolute; right: -40px; bottom: -10px;
-            color: #facc15; font-size: 1.3rem; font-weight: bold;
-            transform: rotate(-15deg); text-shadow: 2px 2px 0px #000;
-            animation: splashPulse 0.5s infinite alternate ease-in-out;
-        }
-        @keyframes splashPulse {
-            0% { transform: rotate(-15deg) scale(1.0); }
-            100% { transform: rotate(-15deg) scale(1.08); }
-        }
-
-        .dev-info-label {
-            color: #e5e7eb; font-size: 15px; font-weight: bold;
-            text-align: center; margin-bottom: 20px; text-shadow: 1px 1px 2px #000;
-        }
-
-        .menu-button-stack {
-            display: flex; flex-direction: column; gap: 12px;
-            width: 100%; max-width: 400px; box-sizing: border-box;
-        }
+        /* Button Stack Structures */
+        .menu-button-stack { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 400px; box-sizing: border-box; }
         .split-button-row { display: flex; gap: 12px; width: 100%; }
 
+        /* Pixel-Style Button Standard Components */
         .mc-btn {
             width: 100%; background: #4b5563; color: #e5e7eb;
             border: 2px solid #1f2937; border-top-color: #9ca3af; border-left-color: #6b7280;
             padding: 10px 0; font-size: 15px; font-weight: bold; cursor: pointer;
             text-align: center; border-radius: 2px; box-shadow: inset 0 -4px 0 rgba(0,0,0,0.3);
-            text-shadow: 1px 1px 2px #000; outline: none;
+            text-shadow: 1px 1px 2px #000; outline: none; box-sizing: border-box;
         }
         .mc-btn:hover { background: #6b7280; border-color: #111827; border-top-color: #d1d5db; color: #fff; }
         .mc-btn:active { padding-top: 12px; padding-bottom: 8px; box-shadow: inset 0 2px 0 rgba(0,0,0,0.5); }
-        .mc-btn.disabled { background: rgba(31, 41, 55, 0.6); color: #9ca3af; border-color: #111827; cursor: not-allowed; box-shadow: none; }
+        .mc-btn.disabled { background: rgba(31, 41, 55, 0.6); color: #9ca3af; border-color: #111827; cursor: not-allowed; box-shadow: none; text-shadow: none; }
 
-        .bottom-left-info { position: absolute; bottom: 12px; left: 15px; color: #fff; font-size: 13px; font-weight: bold; line-height: 1.4; text-shadow: 1px 1px 2px #000; }
-        .bottom-right-info { position: absolute; bottom: 12px; right: 15px; color: #fff; font-size: 13px; font-weight: bold; text-shadow: 1px 1px 2px #000; }
+        /* Worlds Selection System Window HUD Components */
+        .screen-title { color: #fff; font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; text-shadow: 2px 2px 0px #000; }
+        .world-list-box {
+            width: 100%; max-width: 440px; height: 280px; background: rgba(0,0,0,0.6);
+            border: 2px solid #1f2937; overflow-y: auto; margin-bottom: 20px;
+            padding: 8px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px;
+        }
+        .world-item {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(55, 65, 81, 0.5); padding: 10px; border: 1px solid #4b5563;
+            cursor: pointer; border-radius: 2px;
+        }
+        .world-item:hover { border-color: #fff; background: rgba(75, 85, 99, 0.8); }
+        .world-item.selected { border-color: #facc15; background: rgba(17, 24, 39, 0.8); }
+        .world-meta { display: flex; flex-direction: column; gap: 2px; text-align: left; pointer-events: none;}
+        .w-name { color: #fff; font-weight: bold; font-size: 14px; }
+        .w-date { color: #9ca3af; font-size: 11px; }
 
+        /* Mini Utility Modals */
+        .input-dialog { background: #1e293b; border: 3px solid #4b5563; padding: 20px; border-radius: 4px; box-shadow: 0 10px 25px rgba(0,0,0,0.6); text-align: center; }
+        .mc-input { background: #000; border: 2px solid #4b5563; color: #fff; padding: 10px; width: 260px; font-size: 14px; outline: none; margin-bottom: 15px; font-family: monospace; }
+        .mc-input:focus { border-color: #facc15; }
+
+        /* Game Running Viewport Elements */
         #render-canvas { display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
-        #chat-panel { position: fixed; bottom: 20px; left: 20px; width: 380px; height: 260px; z-index: 50; display: none; flex-direction: column; pointer-events: none; }
-        #chat-logs { flex: 1; background: rgba(0, 0, 0, 0.45); border-radius: 4px; padding: 10px; overflow-y: auto; color: #fff; font-size: 14px; text-shadow: 1px 1px 2px #000; margin-bottom: 8px; display: flex; flex-direction: column; gap: 4px; }
-        #chat-input { width: 100%; background: rgba(10, 15, 20, 0.85); border: 1px solid #00ffcc; padding: 10px; border-radius: 4px; color: #fff; outline: none; pointer-events: auto; font-size: 14px; box-sizing: border-box; }
+        #chat-panel { position: fixed; bottom: 20px; left: 20px; width: 380px; height: 220px; z-index: 50; display: none; flex-direction: column; pointer-events: none; }
+        #chat-logs { flex: 1; background: rgba(0, 0, 0, 0.45); border-radius: 4px; padding: 10px; overflow-y: auto; color: #fff; font-size: 13px; text-shadow: 1px 1px 2px #000; margin-bottom: 8px; display: flex; flex-direction: column; gap: 4px; }
     </style>
 </head>
 <body>
@@ -100,11 +97,11 @@
             <div class="splash-text">Got your nose!</div>
         </div>
 
-        <div class="dev-info-label">EaglercraftZ u4 Reference Style<br>Made by Jergcraft-Devs</div>
+        <div class="dev-info-label">EaglercraftZ Worlds Engine Update<br>Made by Jergcraft-Devs</div>
 
         <div class="menu-button-stack">
-            <button class="mc-btn" id="btn-singleplayer">Singleplayer</button>
-            <button class="mc-btn" id="btn-multiplayer">Multiplayer</button>
+            <button class="mc-btn" id="main-btn-singleplayer">Singleplayer</button>
+            <button class="mc-btn" id="main-btn-multiplayer">Multiplayer</button>
             <button class="mc-btn disabled">EaglercraftZ Realms (SOON)</button>
             <div class="split-button-row">
                 <button class="mc-btn">Options...</button>
@@ -116,42 +113,339 @@
         <div class="bottom-right-info">Resources Copyright Mojang AB</div>
     </div>
 
+    <div id="screen-worlds-selector" class="screen-overlay hidden">
+        <div class="screen-title">Select World</div>
+        
+        <div class="world-list-box" id="container-world-items">
+            </div>
+
+        <div class="menu-button-stack">
+            <div class="split-button-row">
+                <button class="mc-btn disabled" id="btn-world-play">Play Selected World</button>
+                <button class="mc-btn" id="btn-world-create-prompt">Create New World</button>
+            </div>
+            <div class="split-button-row">
+                <button class="mc-btn disabled" id="btn-world-delete">Delete</button>
+                <button class="mc-btn" id="btn-world-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-world-wizard" class="screen-overlay hidden" style="background: rgba(5,5,10,0.85); z-index: 20;">
+        <div class="input-dialog">
+            <h3 style="color:#fff; margin-top:0; font-size:16px;">Enter New World Name:</h3>
+            <input type="text" id="input-world-name" class="mc-input" placeholder="New World" maxlength="24">
+            <div class="split-button-row" style="width: 280px; margin: 0 auto;">
+                <button class="mc-btn" id="btn-wizard-confirm">Create</button>
+                <button class="mc-btn" id="btn-wizard-back">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <canvas id="render-canvas"></canvas>
 
     <div id="chat-panel">
         <div id="chat-logs"></div>
-        <input type="text" id="chat-input" placeholder="Press Enter to write chat message...">
     </div>
 
     <script>
-        const menu = document.getElementById('menu-container');
-        const canvas = document.getElementById('render-canvas');
-        const chat = document.getElementById('chat-panel');
+        (function() {
+            'use strict';
 
-        function loadScript(src, callback) {
-            const s = document.createElement('script');
-            s.src = src;
-            s.onload = callback;
-            document.body.appendChild(s);
-        }
+            // Document Target Nodes Elements Mapping Layout Handles
+            const uiMainMenu = document.getElementById('menu-container');
+            const uiWorldsMenu = document.getElementById('screen-worlds-selector');
+            const uiWizardMenu = document.getElementById('screen-world-wizard');
+            const canvas = document.getElementById('render-canvas');
+            const chatPanel = document.getElementById('chat-panel');
+            const chatLogs = document.getElementById('chat-logs');
 
-        // Singleplayer Option: Loads the standalone Map array module
-        document.getElementById('btn-singleplayer').onclick = () => {
-            menu.style.display = 'none';
-            canvas.style.display = 'block';
-            chat.style.display = 'flex';
-            loadScript('Map/forest.js', () => {
-                if (window.initSingleplayerEngine) window.initSingleplayerEngine();
+            const worldListContainer = document.getElementById('container-world-items');
+            const btnPlayWorld = document.getElementById('btn-world-play');
+            const btnDeleteWorld = document.getElementById('btn-world-delete');
+
+            let activeLoadedWorld = null;
+            let currentSelectedWorldId = null;
+            let wsUplinkChannel = null;
+
+            // --- WORLDS DB CONTROLLER CORE MODULE ---
+            function fetchSavedWorlds() {
+                try {
+                    let d = localStorage.getItem('jergcraft_sp_worlds');
+                    return d ? JSON.parse(d) : generateDefaultWorlds();
+                } catch(e) { return generateDefaultWorlds(); }
+            }
+
+            function generateDefaultWorlds() {
+                let initial = [
+                    { id: "w-1", name: "Survival Forest Alpha", stamp: "7/06/26 14:22", seed: 48521, blocks: buildProceduralWorldData(48521) },
+                    { id: "w-2", name: "Creative Flatlands Flat", stamp: "7/06/26 18:05", seed: 121, blocks: buildProceduralWorldData(121) }
+                ];
+                saveWorldsToBrowser(initial);
+                return initial;
+            }
+
+            function saveWorldsToBrowser(arr) {
+                try { localStorage.setItem('jergcraft_sp_worlds', JSON.stringify(arr)); } catch(e){}
+            }
+
+            // Builds structural array of isometric voxel landscape vectors dynamically
+            function buildProceduralWorldData(seed) {
+                let map = [];
+                // Build a 6x6 floor grid terrain platform surface structure matrix
+                for(let x = -3; x <= 3; x++) {
+                    for(let z = -3; z <= 3; z++) {
+                        map.push([x, 0, z, 1]); // 1 = Grass block ID type
+                    }
+                }
+                // Construct basic procedural vertical tree logs layer elements near center mapping
+                let tx = (seed % 3) - 1; 
+                let tz = ((seed >> 2) % 3) - 1;
+                map.push([tx, 1, tz, 3]); // Log Column
+                map.push([tx, 2, tz, 3]); 
+                map.push([tx, 3, tz, 4]); // Green Leaves Cluster Canopy
+                map.push([tx-1, 3, tz, 4]);
+                map.push([tx+1, 3, tz, 4]);
+                map.push([tx, 3, tz-1, 4]);
+                map.push([tx, 3, tz+1, 4]);
+                return map;
+            }
+
+            function renderWorldsSelectionList() {
+                worldListContainer.innerHTML = "";
+                currentSelectedWorldId = null;
+                btnPlayWorld.classList.add('disabled');
+                btnDeleteWorld.classList.add('disabled');
+
+                let worlds = fetchSavedWorlds();
+                if(worlds.length === 0) {
+                    worldListContainer.innerHTML = `<div style="color:#64748b; font-size:13px; text-align:center; margin-top:100px;">No worlds found. Create one!</div>`;
+                    return;
+                }
+
+                worlds.forEach(w => {
+                    const row = document.createElement('div');
+                    row.className = "world-item";
+                    row.setAttribute('data-id', w.id);
+                    row.innerHTML = `
+                        <div class="world-meta">
+                            <span class="w-name">${escapeHtml(w.name)}</span>
+                            <span class="w-date">In-Game Mode: Survival (Seed: ${w.seed}) — Last Played: ${w.stamp}</span>
+                        </div>
+                    `;
+                    row.onclick = function() {
+                        document.querySelectorAll('.world-item').forEach(el=>el.classList.remove('selected'));
+                        this.classList.add('selected');
+                        currentSelectedWorldId = this.getAttribute('data-id');
+                        btnPlayWorld.classList.remove('disabled');
+                        btnDeleteWorld.classList.remove('disabled');
+                    };
+                    worldListContainer.appendChild(row);
+                });
+            }
+
+            function escapeHtml(str) { return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+            // --- 3D GRAPHICS ISOMETRIC RUNTIME LOGIC ENGINE ENGINE ---
+            const player = { x: 0, y: 1, z: 0, speed: 0.07, size: 34, id: 99 };
+            const camera = { x: 0, y: 0, targetX: 0, targetY: 0, lerp: 0.1 };
+            const keys = {};
+
+            window.addEventListener('keydown', (e) => { keys[e.key.toLowerCase()] = true; });
+            window.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
+
+            function processEngineMovement() {
+                let dx = 0, dz = 0;
+                if (keys['w'] || keys['arrowup'])    dz -= player.speed;
+                if (keys['s'] || keys['arrowdown'])  dz += player.speed;
+                if (keys['a'] || keys['arrowleft'])  dx -= player.speed;
+                if (keys['d'] || keys['arrowright']) dx += player.speed;
+                player.x += dx; player.z += dz;
+                player.x = Math.max(-3.3, Math.min(3.3, player.x));
+                player.z = Math.max(-3.3, Math.min(3.3, player.z));
+            }
+
+            function projectIsometricVoxelFace(ctx, x, y, z, size, id) {
+                let topC, leftC, rightC;
+                if (id === 1) { topC = "#10b981"; leftC = "#047857"; rightC = "#78350f"; } 
+                else if (id === 3) { topC = "#b45309"; leftC = "#451a03"; rightC = "#292524"; } 
+                else if (id === 4) { topC = "#059669"; leftC = "#065f46"; rightC = "#044e3a"; } 
+                else if (id === 99) { topC = "#38bdf8"; leftC = "#0284c7"; rightC = "#1e3a8a"; } 
+                else { topC = "#9ca3af"; leftC = "#6b7280"; rightC = "#4b5563"; }
+
+                const isoX = (x - z) * size;
+                const isoY = (x + z) * (size / 2) - (y * size * 1.2);
+                const cx = (canvas.width / 2) + isoX - camera.x;
+                const cy = (canvas.height / 2) + isoY - camera.y;
+
+                // Render Top polygon plane face matrix elements
+                ctx.fillStyle = topC; ctx.beginPath();
+                ctx.moveTo(cx, cy - size / 2); ctx.lineTo(cx + size, cy);
+                ctx.lineTo(cx, cy + size / 2); ctx.lineTo(cx - size, cy);
+                ctx.closePath(); ctx.fill(); ctx.strokeStyle = "rgba(0,0,0,0.15)"; ctx.stroke();
+
+                // Render Left Face
+                ctx.fillStyle = leftC; ctx.beginPath();
+                ctx.moveTo(cx - size, cy); ctx.lineTo(cx, cy + size / 2);
+                ctx.lineTo(cx, cy + size / 2 + size); ctx.lineTo(cx - size, cy + size);
+                ctx.closePath(); ctx.fill(); ctx.stroke();
+
+                // Render Right Face
+                ctx.fillStyle = rightC; ctx.beginPath();
+                ctx.moveTo(cx, cy + size / 2); ctx.lineTo(cx + size, cy);
+                ctx.lineTo(cx + size, cy + size); ctx.lineTo(cx, cy + size / 2 + size);
+                ctx.closePath(); ctx.fill(); ctx.stroke();
+            }
+
+            function frameGraphicsRenderLoop() {
+                if (canvas.style.display !== 'block' || !activeLoadedWorld) return;
+                const ctx = canvas.getContext('2d');
+                
+                if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
+                    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+                }
+
+                processEngineMovement();
+
+                // Process camera vector transformations targets
+                camera.targetX = (player.x - player.z) * player.size;
+                camera.targetY = (player.x + player.z) * (player.size / 2) - (player.y * player.size * 1.2) + 30;
+                camera.x += (camera.targetX - camera.x) * camera.lerp;
+                camera.y += (camera.targetY - camera.y) * camera.lerp;
+
+                // Clear frame pipeline buffer setup background layer
+                ctx.fillStyle = "#1e293b"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Build composite render stack array elements list mapping matrices references
+                let stack = [...activeLoadedWorld.blocks, [player.x, player.y, player.z, player.id]];
+                stack.sort((a, b) => {
+                    if (Math.abs(a[1] - b[1]) > 0.1) return a[1] - b[1];
+                    return (a[0] + a[2]) - (b[0] + b[2]);
+                });
+
+                // Flush project stack processing block nodes elements onto spatial engine map dimensions
+                stack.forEach(c => { projectIsometricVoxelFace(ctx, c[0], c[1], c[2], player.size, c[3]); });
+                requestAnimationFrame(frameGraphicsRenderLoop);
+            }
+
+            function loadAndBootEngineSession(targetWorldProfile) {
+                activeLoadedWorld = targetWorldProfile;
+                uiWorldsMenu.classList.add('hidden');
+                
+                canvas.style.display = 'block';
+                chatPanel.style.display = 'flex';
+                
+                chatLogs.innerHTML = `<div><b style="color:#facc15;">SYSTEM:</b> <span style="color:#fff;">Entered world "${targetWorldProfile.name}". Use WASD/Arrows to move player voxel.</span></div>`;
+                
+                // Set default baseline spatial layout positioning coordinate vectors handles values
+                player.x = 0; player.y = 1; player.z = 0;
+                camera.x = 0; camera.y = 0;
+
+                frameGraphicsRenderLoop();
+            }
+
+            // --- NAVIGATION ROUTING INTERFACE SYSTEM CAPTURING HANDLING ---
+            window.addEventListener('DOMContentLoaded', () => {
+
+                // Primary Screens Link Handles triggers routing mappings
+                document.getElementById('main-btn-singleplayer').onclick = () => {
+                    uiMainMenu.classList.add('hidden');
+                    uiWorldsMenu.classList.remove('hidden');
+                    renderWorldsSelectionList();
+                };
+
+                document.getElementById('btn-world-cancel').onclick = () => {
+                    uiWorldsMenu.classList.add('hidden');
+                    uiMainMenu.classList.remove('hidden');
+                };
+
+                document.getElementById('btn-world-create-prompt').onclick = () => {
+                    document.getElementById('input-world-name').value = "New World";
+                    uiWizardMenu.classList.remove('hidden');
+                };
+
+                document.getElementById('btn-wizard-back').onclick = () => {
+                    uiWizardMenu.classList.add('hidden');
+                };
+
+                document.getElementById('btn-wizard-confirm').onclick = () => {
+                    let nameField = document.getElementById('input-world-name').value.trim();
+                    if(!nameField) nameField = "Unnamed World Seed";
+                    
+                    let worlds = fetchSavedWorlds();
+                    let randomSeed = Math.floor(Math.random() * 99999);
+                    let now = new Date();
+                    let dateString = `${now.getMonth()+1}/${String(now.getDate()).padStart(2,'0')}/${String(now.getFullYear()).substring(2)} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+                    let newProfile = {
+                        id: "w-" + Date.now(),
+                        name: nameField,
+                        stamp: dateString,
+                        seed: randomSeed,
+                        blocks: buildProceduralWorldData(randomSeed)
+                    };
+
+                    worlds.unshift(newProfile);
+                    saveWorldsToBrowser(worlds);
+                    uiWizardMenu.classList.add('hidden');
+                    renderWorldsSelectionList();
+                };
+
+                document.getElementById('btn-world-delete').onclick = () => {
+                    if(!currentSelectedWorldId) return;
+                    if(confirm("Are you sure you want to delete this world dimension footprint forever?")) {
+                        let worlds = fetchSavedWorlds();
+                        worlds = worlds.filter(w => w.id !== currentSelectedWorldId);
+                        saveWorldsToBrowser(worlds);
+                        renderWorldsSelectionList();
+                    }
+                };
+
+                document.getElementById('btn-world-play').onclick = () => {
+                    if(!currentSelectedWorldId) return;
+                    let worlds = fetchSavedWorlds();
+                    let target = worlds.find(w => w.id === currentSelectedWorldId);
+                    if(target) {
+                        // Update timing footprint reference trace timestamp metric value parameters records
+                        let now = new Date();
+                        target.stamp = `${now.getMonth()+1}/${String(now.getDate()).padStart(2,'0')}/${String(now.getFullYear()).substring(2)} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+                        saveWorldsToBrowser(worlds);
+                        loadAndBootEngineSession(target);
+                    }
+                };
+
+                // Multiplayer Stream Option Trigger
+                document.getElementById('main-btn-multiplayer').onclick = () => {
+                    uiMainMenu.classList.add('hidden');
+                    canvas.style.display = 'block';
+                    chatPanel.style.display = 'flex';
+                    
+                    chatLogs.innerHTML = `<div><b style="color:#00ffcc;">MULTIPLAYER:</b> <span style="color:#fff;">Connecting stream pipeline to target wss://JergXCraft.eagler.host...</span></div>`;
+                    
+                    // Create simulated mapping architecture footprint vectors to keep viewport functional during transmission
+                    activeLoadedWorld = { name: "Multiplayer Buffer Server Node Instance", blocks: buildProceduralWorldData(777) };
+                    frameGraphicsRenderLoop();
+
+                    try {
+                        wsUplinkChannel = new WebSocket("wss://JergXCraft.eagler.host");
+                        wsUplinkChannel.onopen = () => {
+                            chatLogs.innerHTML += `<div><b style="color:#00ffcc;">MULTIPLAYER:</b> <span style="color:#4ade80;">Uplink fully verified! Streaming network channel active.</span></div>`;
+                        };
+                        wsUplinkChannel.onmessage = (e) => {
+                            try {
+                                let d = JSON.parse(e.data);
+                                if(d.type === "WORLD_DATA") activeLoadedWorld.blocks = d.map.blocks;
+                            } catch(err){}
+                        };
+                        wsUplinkChannel.onclose = () => {
+                            chatLogs.innerHTML += `<div><b style="color:#f87171;">MULTIPLAYER:</b> <span style="color:#f87171;">Connection dropped from remote network destination socket route stream track.</span></div>`;
+                        };
+                    } catch(err) {
+                        chatLogs.innerHTML += `<div><b style="color:#f87171;">SYSTEM ERROR:</b> <span style="color:#fff;">Websocket driver instantiation failure state recorded.</span></div>`;
+                    }
+                };
             });
-        };
-
-        // Multiplayer Option: Loads the WebSocket Server communication module
-        document.getElementById('btn-multiplayer').onclick = () => {
-            menu.style.display = 'none';
-            canvas.style.display = 'block';
-            chat.style.display = 'flex';
-            loadScript('Javascript/jergcraft.js');
-        };
+        })();
     </script>
 </body>
 </html>
