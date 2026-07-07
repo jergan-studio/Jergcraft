@@ -1,29 +1,22 @@
 /**
  * Map/forest.js
- * True 3D Isometric Singleplayer Game Loop Module
+ * 3D Isometric Singleplayer Engine with Keyboard Player & Tracking Camera
  */
 window.ForestMap = {
-    name: "Local 3D Forest World",
-    // Format: [X, Y, Z, BlockTypeID]
+    name: "3D World with Camera Tracking",
+    // Base world blocks: [X, Y, Z, BlockTypeID]
     blocks: [
-        // Layer 0: Ground Plane (Grass/Dirt Matrix)
+        // Layer 0: Ground Plane
         [-2, 0, -2, 1], [-1, 0, -2, 1], [0, 0, -2, 1], [1, 0, -2, 1], [2, 0, -2, 1],
         [-2, 0, -1, 1], [-1, 0, -1, 1], [0, 0, -1, 1], [1, 0, -1, 1], [2, 0, -1, 1],
         [-2, 0,  0, 1], [-1, 0,  0, 1], [0, 0,  0, 1], [1, 0,  0, 1], [2, 0,  0, 1],
         [-2, 0,  1, 1], [-1, 0,  1, 1], [0, 0,  1, 1], [1, 0,  1, 1], [2, 0,  1, 1],
         [-2, 0,  2, 1], [-1, 0,  2, 1], [0, 0,  2, 1], [1, 0,  2, 1], [2, 0,  2, 1],
 
-        // Center Tree Trunk (Wood Log Column)
-        [0, 1, 0, 3], 
-        [0, 2, 0, 3], 
-        
-        // Tree Canopy (Green Leaves Layer)
-        [0,  3,  0, 4], 
-        [-1, 3,  0, 4], 
-        [1,  3,  0, 4], 
-        [0,  3, -1, 4], 
-        [0,  3,  1, 4],
-        [0,  4,  0, 4]
+        // Tree Structure
+        [1, 1, -1, 3], 
+        [1, 2, -1, 3], 
+        [1, 3, -1, 4], [-1, 3, -1, 4], [2, 3, -1, 4], [1, 3, -2, 4], [1, 3, 0, 4]
     ]
 };
 
@@ -37,45 +30,76 @@ window.initSingleplayerEngine = function() {
         logs.appendChild(row);
     }
 
-    log("Loaded Local 3D Map Vector Structure: " + window.ForestMap.name);
+    log("3D Engine active. Use W, A, S, D or Arrows to control your player cube.");
+
+    // --- Player State Configuration ---
+    const player = {
+        x: 0,
+        y: 1, // Sitting safely on top of the grass layer
+        z: 0,
+        speed: 0.08,
+        size: 35,
+        id: 99 // Unique identifier for rendering properties
+    };
+
+    // --- Camera State Configuration ---
+    const camera = {
+        x: 0,
+        y: 0,
+        targetX: 0,
+        targetY: 0,
+        lerpFactor: 0.1 // Determines tracking smoothness (lower = smoother delay)
+    };
+
+    // Track active key presses
+    const keys = {};
+    window.addEventListener('keydown', (e) => { keys[e.key.toLowerCase()] = true; });
+    window.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
+
+    function handlePlayerMovement() {
+        // Capture input directions
+        let dx = 0;
+        let dz = 0;
+
+        if (keys['w'] || keys['arrowup'])    dz -= player.speed;
+        if (keys['s'] || keys['arrowdown'])  dz += player.speed;
+        if (keys['a'] || keys['arrowleft'])  dx -= player.speed;
+        if (keys['d'] || keys['arrowright']) dx += player.speed;
+
+        // Apply position updates
+        player.x += dx;
+        player.z += dz;
+
+        // Soft boundary clamps to keep the player block on the platform grid
+        player.x = Math.max(-2.2, Math.min(2.2, player.x));
+        player.z = Math.max(-2.2, Math.min(2.2, player.z));
+    }
 
     function drawIsometricCube(ctx, x, y, z, size, id) {
-        // Define color profiles for each 3D face depending on block type
         let topColor, leftColor, rightColor;
 
-        if (id === 1) { // Grass Block
-            topColor = "#10b981";   // Bright Green
-            leftColor = "#047857";  // Darker Grass Edge
-            rightColor = "#78350f"; // Dirt Side
-        } else if (id === 2) { // Dirt
-            topColor = "#92400e";
-            leftColor = "#78350f";
-            rightColor = "#451a03";
-        } else if (id === 3) { // Tree Log
-            topColor = "#b45309";
-            leftColor = "#451a03";
-            rightColor = "#292524";
+        // Assign colors based on Block ID
+        if (id === 1) {       // Grass
+            topColor = "#10b981"; leftColor = "#047857"; rightColor = "#78350f";
+        } else if (id === 3) { // Wood Trunk
+            topColor = "#b45309"; leftColor = "#451a03"; rightColor = "#292524";
         } else if (id === 4) { // Leaves
-            topColor = "#059669";
-            leftColor = "#065f46";
-            rightColor = "#044e3a";
-        } else { // Default Stone
-            topColor = "#9ca3af";
-            leftColor = "#6b7280";
-            rightColor = "#4b5563";
+            topColor = "#059669"; leftColor = "#065f46"; rightColor = "#044e3a";
+        } else if (id === 99) { // Player Character (Blue Voxel Hero)
+            topColor = "#38bdf8"; leftColor = "#0284c7"; rightColor = "#1e3a8a";
+        } else {               // Stone
+            topColor = "#9ca3af"; leftColor = "#6b7280"; rightColor = "#4b5563";
         }
 
-        // --- 3D Projection Math Equations ---
-        // Width factor adjustments
+        // --- Core 3D Math Projection Equations ---
         const isoX = (x - z) * size;
-        // Height factor adjustments (subtracting Y pushes the block UP visually)
         const isoY = (x + z) * (size / 2) - (y * size * 1.2);
 
-        // Center projection points onto viewport
-        const cx = canvas.width / 2 + isoX;
-        const cy = canvas.height / 2 + isoY + 50; 
+        // Apply camera offsets to the world screen anchor point
+        const cx = (canvas.width / 2) + isoX - camera.x;
+        const cy = (canvas.height / 2) + isoY - camera.y;
 
-        // 1. Render Top Face (Diamond Shape Polygon)
+        // 1. Draw Top Polygon
         ctx.fillStyle = topColor;
         ctx.beginPath();
         ctx.moveTo(cx, cy - size / 2);
@@ -84,10 +108,10 @@ window.initSingleplayerEngine = function() {
         ctx.lineTo(cx - size, cy);
         ctx.closePath();
         ctx.fill();
-        ctx.strokeStyle = "rgba(0,0,0,0.15)";
+        ctx.strokeStyle = "rgba(0,0,0,0.18)";
         ctx.stroke();
 
-        // 2. Render Left Face
+        // 2. Draw Left Side Polygon
         ctx.fillStyle = leftColor;
         ctx.beginPath();
         ctx.moveTo(cx - size, cy);
@@ -98,7 +122,7 @@ window.initSingleplayerEngine = function() {
         ctx.fill();
         ctx.stroke();
 
-        // 3. Render Right Face
+        // 3. Draw Right Side Polygon
         ctx.fillStyle = rightColor;
         ctx.beginPath();
         ctx.moveTo(cx, cy + size / 2);
@@ -114,28 +138,27 @@ window.initSingleplayerEngine = function() {
         if (canvas.style.display !== 'block') return;
         const ctx = canvas.getContext('2d');
         
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        // Dynamic full window canvas frame matching
+        if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
 
-        // Draw sky background
+        // Processing movement and updates
+        handlePlayerMovement();
+
+        // --- Camera Calculations ---
+        // Find exactly where the player stands in 3D isometric screenspace coordinates
+        camera.targetX = (player.x - player.z) * player.size;
+        camera.targetY = (player.x + player.z) * (player.size / 2) - (player.y * player.size * 1.2) + 40;
+
+        // Apply linear interpolation (Lerp) to smoothly pan the camera tracking view
+        camera.x += (camera.targetX - camera.x) * camera.lerpFactor;
+        camera.y += (camera.targetY - camera.y) * camera.lerpFactor;
+
+        // Clean frame draw
         ctx.fillStyle = "#1e293b"; 
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Sort voxel blocks from back-to-front (Painter's algorithm)
-        // This ensures objects further back don't render on top of foreground blocks
-        let sortedBlocks = [...window.ForestMap.blocks].sort((a, b) => {
-            if (a[1] !== b[1]) return a[1] - b[1]; // Sort by altitude layer (Y) first
-            return (a[0] + a[2]) - (b[0] + b[2]);  // Sort by depth footprint (X + Z)
-        });
-
-        // Loop through and project each block onto the screen layout
-        const blockSize = 35; 
-        sortedBlocks.forEach(b => {
-            drawIsometricCube(ctx, b[0], b[1], b[2], blockSize, b[3]);
-        });
-
-        requestAnimationFrame(renderLoop);
-    }
-
-    renderLoop();
-};
+        // Merge standard map blocks and the dynamic player into a unified stack array
+        let dynamicMapStack =
