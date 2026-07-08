@@ -3,7 +3,7 @@
 
     console.log("[Jergcraft Core] Engine initialized.");
 
-    const MOBILE_URL = "https://irv77.github.io/EaglerPocketMobile/demo/";
+    const MOBILE_URL = "https://eaglercraftz.pages.dev/javascript/builds/0.4.0/";
     const COMPUTER_URL = "https://jerg-crafter.vercel.app/jergcraft/index.html";
 
 
